@@ -1,0 +1,112 @@
+.addCardsPanelOuter {
+  position: fixed !important;
+  display: flex;
+  justify-content: center !important;
+  align-items: center !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.addCardsPanel {
+  width: 80% !important;
+  height: 80% !important;
+  background: white !important;
+  max-width: 120ch !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  border: 5px solid grey !important;
+  border-radius: 5px !important;
+  overflow-y: scroll !important;
+}
+
+.addTypeForm {
+  width: 60% !important;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.addCardsRadioGroup {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: baseline !important;
+  width: 100% !important;
+}
+
+.addCardsRadio {
+  margin-left: auto !important;
+}
+
+.addCardsRadioLabel {
+  margin-left: 1rem !important;
+  margin-right: auto !important;
+}
+
+.additionForm {
+  width: 80% !important;
+  height: 80% !important;
+}
+
+.additionForm textarea {
+  width: 100% !important;
+}
+
+.arrayInput {
+  background-color: lightgrey;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.5rem;
+}
+
+.arrayInput .arrayInputRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.arrayInput .arrayInputInput,
+.arrayInputRemove {
+  margin: 0.5rem 2rem;
+}
+
+.arrayInput .arrayInputRemove {
+  width: 2rem;
+}
+
+.arrayInput .arrayInputAdd {
+  margin: 0.5rem 1rem;
+}
+
+.arrayInput label + .arrayInputInput {
+  margin-left: 1rem;
+  width: 100%;
+}
+
+.arrayInput label {
+  margin-left: 1rem;
+}
+
+.kanjiComposition {
+  background-color: lightgrey;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.kanjiComposition .kanjiCompositionElement {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.kanjiComposition .kanjiCompositionElement .kanjiCompositionKanji {
+  width: 2rem;
+}
+
+.kanjiComposition .kanjiCompositionElement label {
+  margin: 0 1rem;
+}

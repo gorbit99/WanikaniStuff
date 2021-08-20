@@ -1,0 +1,49 @@
+<fieldset>
+  <legend>Required</legend>
+  <label for="kanji">Kanji</label>
+  <input type="text" id="kanji" name="kanji" required />
+  <label for="meaning">Meaning</label>
+  <div class="arrayInput" name="meaning" id="meaning" required="true">
+    <template class="arrayInputTemplate">
+      <div class="arrayInputRow">
+        <input type="text" class="arrayInputInput" />
+        <button class="arrayInputRemove">-</button>
+      </div>
+    </template>
+  </div>
+  <label for="onyomi">Onyomi</label>
+  <div class="arrayInput" name="onyomi" id="onyomi" required="true">
+    <template class="arrayInputTemplate">
+      <div class="arrayInputRow">
+        <input type="text" class="arrayInputInput" />
+        <button class="arrayInputRemove">-</button>
+      </div>
+    </template>
+  </div>
+  <label for="kunyomi">Kunyomi</label>
+  <div class="arrayInput" name="kunyomi" id="kunyomi">
+    <template class="arrayInputTemplate">
+      <div class="arrayInputRow">
+        <input type="text" class="arrayInputInput" />
+        <button class="arrayInputRemove">-</button>
+      </div>
+    </template>
+  </div>
+  <label for="emphasis">Emphasis on</label>
+  <select name="emphasis" id="emphasis" required>
+    <option value="onyomi">Onyomi</option>
+    <option value="kunyomi">Kunyomi</option>
+  </select>
+</fieldset>
+<fieldset>
+  <legend>Optional</legend>
+  <label for="meaningMnemonic">Meaning mnemonic</label>
+  <textarea id="meaningMnemonic" name="meaningMnemonic"></textarea>
+  <label for="meaningHint">Meaning hint</label>
+  <textarea id="meaningHint" name="meaningHint"></textarea>
+  <label for="readingMnemonic">Reading mnemonic</label>
+  <textarea id="readingMnemonic" name="readingMnemonic"></textarea>
+  <label for="readingHint">Reading hint</label>
+  <textarea id="readingHint" name="readingHint"></textarea>
+</fieldset>
+<input type="submit" value="Add Kanji" />

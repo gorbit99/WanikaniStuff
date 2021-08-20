@@ -1,0 +1,67 @@
+<fieldset>
+    <legend>Required</legend>
+    <label for="vocab">Vocab</label>
+    <input type="text" id="vocab" name="vocab" required>
+    <label for="meaning">Meaning</label>
+    <div class="arrayInput" name="meaning" id="meaning" required="true">
+        <template class="arrayInputTemplate">
+            <div class="arrayInputRow">
+                <input type="text" class="arrayInputInput">
+                <button class="arrayInputRemove">-</button>
+            </div>
+        </template>
+    </div>
+    <label for="reading">Reading</label>
+    <div class="arrayInput" name="reading" id="reading" required="true">
+        <template class="arrayInputTemplate">
+            <div class="arrayInputRow">
+                <input type="text" class="arrayInputInput">
+                <button class="arrayInputRemove">-</button>
+            </div>
+        </template>
+    </div>
+</fieldset>
+<fieldset>
+    <legend>Optional</legend>
+    <label for="meaningMnemonic">Meaning mnemonic</label>
+    <textarea id="meaningMnemonic" name="meaningMnemonic"></textarea>
+    <label for="readingMnemonic">Reading mnemonic</label>
+    <textarea id="readingMnemonic" name="readingMnemonic"></textarea>
+    <label for="partsOfSpeech">Parts of speech</label>
+    <div class="arrayInput" name="partsOfSpeech" id="partsOfSpeech">
+        <template class="arrayInputTemplate">
+            <div class="arrayInputRow">
+                <input type="text" class="arrayInputInput">
+                <button class="arrayInputRemove">-</button>
+            </div>
+        </template>
+    </div>
+    <label for="sentences">Sentences</label>
+    <div class="arrayInput" name="sentences" id="sentences">
+        <template class="arrayInputTemplate">
+            <div class="arrayInputRow">
+                <label>jp</label>
+                <input type="text" class="arrayInputInput">
+                <label>en</label>
+                <input type="text" class="arrayInputInput">
+                <button class="arrayInputRemove">-</button>
+            </div>
+        </template>
+    </div>
+    <label for="kanjiComposition">Kanji composition</label>
+    <div class="kanjiComposition" name="kanjiComposition")>
+        <template class="kanjiCompositionTemplate">
+            <div class="kanjiCompositionElement">
+                <input type="text" 
+                       class="kanjiCompositionKanji" 
+                       name="kanjiCompositionKanji[]"
+                       readonly>
+                <label>Meaning:</label>
+                <input type="text" 
+                       class="kanjiCompositionMeaning" 
+                       name="kanjiCompositionMeaning[]">
+        </template>
+            </div>
+    </div>
+</fieldset>
+<input type="submit" value="Add Vocab">

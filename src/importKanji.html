@@ -1,0 +1,31 @@
+<fieldset>
+  <legend>Required</legend>
+  <label for="kanji">Kanji</label>
+  <select id="kanji" name="kanji" required to-fill="true"></select>
+  <label for="meaning">Meaning</label>
+  <select id="meaning" name="meaning" required to-fill="true"></select>
+  <label for="onyomi">Onyomi</label>
+  <select id="onyomi" name="onyomi" required to-fill="true"></select>
+  <label for="kunyomi">Kunyomi</label>
+  <select id="kunyomi" name="kunyomi" required to-fill="true"></select>
+</fieldset>
+<fieldset>
+  <legend>Optional</legend>
+  <label for="meaningMnemonic">Meaning mnemonic</label>
+  <select id="meaningMnemonic" name="meaningMnemonic" to-fill="true">
+    <option value="-1">None</option>
+  </select>
+  <label for="meaningHint">Meaning hint</label>
+  <select id="meaningHint" name="meaningHint" to-fill="true">
+    <option value="-1">None</option>
+  </select>
+  <label for="readingMnemonic">Reading mnemonic</label>
+  <select id="readingMnemonic" name="readingMnemonic" to-fill="true">
+    <option value="-1">None</option>
+  </select>
+  <label for="readingHint">Reading hint</label>
+  <select id="readingHint" name="readingHint" to-fill="true">
+    <option value="-1">None</option>
+  </select>
+</fieldset>
+<input type="submit" value="Import Vocab" />
