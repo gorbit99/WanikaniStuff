@@ -1,5 +1,5 @@
-import { KanjiData } from "./kanji";
-import { VocabData } from "./vocab";
+import { KanjiData, KanjiJSONData } from './kanji';
+import { VocabData, VocabJSONData } from './vocab';
 
 export type DataItem = KanjiData | VocabData;
 
@@ -10,16 +10,18 @@ export class Database {
     this.data = [];
   }
 
-  load() {
-    this.data = $.jStorage.get("customCards", []);
+  load(): void {
+    this.data = $.jStorage.get('customCards', []);
   }
 
-  save() {
-    $.jStorage.set("customCards", this.data);
+  save(): void {
+    $.jStorage.set('customCards', this.data);
   }
 
-  migrate() {
-    let rawData: any = this.data;
+  migrate(): void {
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rawData: any = this.data;
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     rawData.map((item: any) => {
       if (item.version === undefined) {
         if (item.voc !== undefined && item.collocations === undefined) {
@@ -43,8 +45,8 @@ export class Database {
               stroke: item.stroke,
               meaning_explanation: item.meaning_explanation,
               reading_explanation: item.reading_explanation,
-              en: item.en.join(", "),
-              kana: item.kana.join(", "),
+              en: item.en.join(', '),
+              kana: item.kana.join(', '),
               sentences: item.sentences,
               meaning_note: item.meaning_note,
               reading_note: item.reading_note,
@@ -71,7 +73,7 @@ export class Database {
               meaning_hint: item.meaning_hint,
               reading_mnemonic: item.reading_mnemonic,
               reading_hint: item.reading_hint,
-              en: item.en.join(", "),
+              en: item.en.join(', '),
               meaning_note: item.meaning_note,
               reading_note: item.reading_note,
               related: item.related,
@@ -93,11 +95,13 @@ export class Database {
         const jsonData = item.metadata;
         delete item.metadata;
 
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
         const lessonData: any = {};
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
         const reviewData: any = {};
 
         for (const key in item) {
-          if (key === "collocations" || key === "kanji") {
+          if (key === 'collocations' || key === 'kanji') {
             lessonData[key] = item[key];
           } else {
             reviewData[key] = item[key];
@@ -150,7 +154,7 @@ export class Database {
     this.save();
   }
 
-  getDueReviews() {
+  getDueReviews(): DataItem[] {
     return this.data.filter(
       (item) =>
         (!item.reviewData.due_date ||
@@ -160,32 +164,31 @@ export class Database {
     );
   }
 
-  getDueLessons() {
+  getDueLessons(): DataItem[] {
     const items = this.data.filter((item) => item.reviewData.srs === 0);
 
     return items;
   }
 
-  get(id: string) {
+  get(id: string): DataItem | undefined {
     return this.data.find((item) => item.reviewData.id === id);
   }
 
-  getIndex(id: string) {
+  getIndex(id: string): number {
     return this.data.findIndex((item) => item.reviewData.id === id);
   }
 
-  find(predicate: (item: DataItem) => boolean) {
+  find(predicate: (_item: DataItem) => boolean): DataItem | undefined {
     return this.data.find(predicate);
   }
 
-  add(entry: DataItem) {
+  add(entry: DataItem): void {
     this.data.push(entry);
   }
 
-  getNextId() {
-    const max = Math.max.apply(
-      Math,
-      this.data.map((item) => parseInt(item.reviewData.id.slice(1)))
+  getNextId(): number {
+    const max = Math.max(
+      ...this.data.map((item) => parseInt(item.reviewData.id.slice(1)))
     );
 
     if (!isFinite(max)) {
@@ -194,8 +197,10 @@ export class Database {
     return max + 1;
   }
 
-  fromJSONEndpoint(endpoint: string) {
-    const id = endpoint.slice(endpoint.lastIndexOf("/") + 1);
+  fromJSONEndpoint(
+    endpoint: string
+  ): VocabJSONData | KanjiJSONData | undefined {
+    const id = endpoint.slice(endpoint.lastIndexOf('/') + 1);
     return this.get(id)?.jsonData;
   }
 }

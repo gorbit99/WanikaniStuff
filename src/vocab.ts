@@ -1,5 +1,6 @@
-import { UI } from "./ui";
-import { database } from "./userscript";
+import { AuxiliaryData } from './common';
+import { UI } from './ui';
+import { database } from './userscript';
 
 interface AudioData {
   content_type: string;
@@ -45,7 +46,7 @@ interface VocabLessonData {
   voc: string;
 }
 
-interface VocabJSONData {
+export interface VocabJSONData {
   audio: AudioData[];
   en: string;
   kana: string;
@@ -73,51 +74,51 @@ export class Vocab {
     if (
       database.find((elem) => {
         return (
-          "voc" in elem.reviewData &&
-          elem.reviewData.voc === formData.get("vocab")
+          'voc' in elem.reviewData &&
+          elem.reviewData.voc === formData.get('vocab')
         );
       }) !== undefined
     ) {
-      alert("That vocab has been added before!");
+      alert('That vocab has been added before!');
       return false;
     }
 
-    const meanings = UI.getArrayInputValues(form, "meaning");
-    const readings = UI.getArrayInputValues(form, "reading");
+    const meanings = UI.getArrayInputValues(form, 'meaning');
+    const readings = UI.getArrayInputValues(form, 'reading');
 
-    const sentencesRaw = UI.getArrayInputValues(form, "sentences");
+    const sentencesRaw = UI.getArrayInputValues(form, 'sentences');
     const sentences: [string, string][] = [];
     for (let i = 0, len = sentencesRaw.length / 2; i < len; i++) {
       sentences.push([
-        sentencesRaw[i * 2] ?? "",
-        sentencesRaw[i * 2 + 1] ?? "",
+        sentencesRaw[i * 2] ?? '',
+        sentencesRaw[i * 2 + 1] ?? '',
       ]);
     }
 
     const kanjiCompositionMeaningRaw = UI.getArrayInputValues(
       form,
-      "kanjiCompositionMeaning"
+      'kanjiCompositionMeaning'
     );
 
     const kanjiCompositionKanjiRaw = UI.getArrayInputValues(
       form,
-      "kanjiCompositionKanji"
+      'kanjiCompositionKanji'
     );
 
     const meaning_mnemonic =
-      (formData.get("meaningMnemonic") as string) ||
-      "No meaning mnemonic was given.";
+      (formData.get('meaningMnemonic') as string) ||
+      'No meaning mnemonic was given.';
     const reading_mnemonic =
-      (formData.get("readingMnemonic") as string) ||
-      "No reading mnemonic was given.";
+      (formData.get('readingMnemonic') as string) ||
+      'No reading mnemonic was given.';
 
     const kanjiComposition = kanjiCompositionMeaningRaw.map((_, index) => {
       return {
-        kan: kanjiCompositionKanjiRaw[index] ?? "",
-        en: kanjiCompositionMeaningRaw[index] ?? "",
-        slug: kanjiCompositionKanjiRaw[index] ?? "",
+        kan: kanjiCompositionKanjiRaw[index] ?? '',
+        en: kanjiCompositionMeaningRaw[index] ?? '',
+        slug: kanjiCompositionKanjiRaw[index] ?? '',
         //TODO reading thingy
-        ja: "",
+        ja: '',
       };
     });
 
@@ -129,22 +130,22 @@ export class Vocab {
         auxiliary_meanings: [], //No need
         auxiliary_readings: [], //No need
         en: meanings,
-        id: "c" + database.getNextId(),
+        id: 'c' + database.getNextId(),
         kana: readings,
         srs: 0,
         syn: [], //Later with card management
-        voc: formData.get("vocab") as string,
+        voc: formData.get('vocab') as string,
         due_date: new Date(),
         burned: false,
       },
 
       jsonData: {
         audio: [], //Todo Audio
-        en: meanings.join(", "),
-        kana: readings.join(", "),
+        en: meanings.join(', '),
+        kana: readings.join(', '),
         meaning_explanation: meaning_mnemonic,
         meaning_note: null, //Later with card management
-        parts_of_speech: UI.getArrayInputValues(form, "partsOfSpeech"),
+        parts_of_speech: UI.getArrayInputValues(form, 'partsOfSpeech'),
         reading_explanation: reading_mnemonic,
         reading_note: null, //Later with card management
         related: kanjiComposition,
@@ -158,14 +159,14 @@ export class Vocab {
         auxiliary_readings: [], //No need
         collocations: [], //Todo dunno
         en: meanings,
-        id: "c" + database.getNextId(),
+        id: 'c' + database.getNextId(),
         kana: readings,
         kanji: kanjiComposition,
         mmne: meaning_mnemonic,
-        parts_of_speech: UI.getArrayInputValues(form, "partsOfSpeech"),
+        parts_of_speech: UI.getArrayInputValues(form, 'partsOfSpeech'),
         rmne: reading_mnemonic,
         sentences: sentences,
-        voc: formData.get("vocab") as string,
+        voc: formData.get('vocab') as string,
       },
     };
 
@@ -178,8 +179,8 @@ export class Vocab {
   public static importVocab(form: HTMLFormElement): boolean {
     const formData = new FormData(form);
 
-    let chooseDeckElem = document.querySelector(
-      "#chooseDeck"
+    const chooseDeckElem = document.querySelector(
+      '#chooseDeck'
     ) as HTMLInputElement;
 
     if (chooseDeckElem.files === null) {
@@ -191,44 +192,44 @@ export class Vocab {
     const fileReader = new FileReader();
 
     fileReader.onload = (event) => {
-      let target = event.target as FileReader;
+      const target = event.target as FileReader;
 
       const text = target.result as string;
 
-      const lines = text.split("\n").map((line) => line.split("\t"));
+      const lines = text.split('\n').map((line) => line.split('\t'));
 
       let nextId = database.getNextId();
 
       for (const line of lines) {
-        const vocab = line[parseInt(formData.get("vocab") as string)] ?? "";
+        const vocab = line[parseInt(formData.get('vocab') as string)] ?? '';
 
         if (
           database.find(
-            (elem) => "voc" in elem.reviewData && elem.reviewData.voc === vocab
+            (elem) => 'voc' in elem.reviewData && elem.reviewData.voc === vocab
           ) !== undefined
         ) {
           continue;
         }
 
         const getField = (field: string): string => {
-          return line[parseInt(formData.get(field) as string)] ?? "";
+          return line[parseInt(formData.get(field) as string)] ?? '';
         };
 
         const meaning_explanationId = parseInt(
-          formData.get("meaningMnemonic") as string
+          formData.get('meaningMnemonic') as string
         );
         const reading_explanationId = parseInt(
-          formData.get("readingMnemonic") as string
+          formData.get('readingMnemonic') as string
         );
 
         const meaning_mnemonic =
           meaning_explanationId === -1
-            ? "No meaning mnemonic was given."
-            : line[meaning_explanationId] ?? "";
+            ? 'No meaning mnemonic was given.'
+            : line[meaning_explanationId] ?? '';
         const reading_mnemonic =
           reading_explanationId === -1
-            ? "No reading mnemonic was given."
-            : line[reading_explanationId] ?? "";
+            ? 'No reading mnemonic was given.'
+            : line[reading_explanationId] ?? '';
 
         const newEntry: VocabData = {
           version: 1,
@@ -237,9 +238,9 @@ export class Vocab {
             aud: [],
             auxiliary_meanings: [],
             auxiliary_readings: [],
-            en: [getField("meaning")],
-            id: "c" + nextId,
-            kana: [getField("reading")],
+            en: [getField('meaning')],
+            id: 'c' + nextId,
+            kana: [getField('reading')],
             srs: 0,
             syn: [],
             voc: vocab,
@@ -251,8 +252,8 @@ export class Vocab {
             stroke: 0,
             meaning_explanation: meaning_mnemonic,
             reading_explanation: reading_mnemonic,
-            en: getField("meaning"),
-            kana: getField("reading"),
+            en: getField('meaning'),
+            kana: getField('reading'),
             sentences: [],
             meaning_note: null,
             reading_note: null,
@@ -265,9 +266,9 @@ export class Vocab {
             aud: [],
             auxiliary_meanings: [],
             auxiliary_readings: [],
-            en: [getField("meaning")],
-            id: "c" + nextId,
-            kana: [getField("reading")],
+            en: [getField('meaning')],
+            id: 'c' + nextId,
+            kana: [getField('reading')],
             voc: vocab,
             collocations: [], //Todo dunno
             kanji: [],
