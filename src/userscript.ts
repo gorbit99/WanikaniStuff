@@ -78,9 +78,13 @@ export const database = new Database();
       ) => void;
       if (originalSuccess !== undefined) {
         data.success = (items, status, jqXHR) => {
-          items = items.concat(database.getDueReviews());
           originalSuccess(
-            items.map((item: DataItem) => item.reviewData),
+            items.concat(
+              database.getDueReviews().map((item: DataItem) => {
+                console.log(item.reviewData);
+                return item.reviewData;
+              })
+            ),
             status,
             jqXHR
           );

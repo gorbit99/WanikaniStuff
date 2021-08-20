@@ -7,8 +7,8 @@ const stripIndent = require('common-tags').stripIndent;
 
 module.exports = {
   entry: './src/userscript.ts',
-  devtool: 'inline-source-map',
-  mode: 'development',
+  devtool: 'hidden-source-map',
+  mode: 'production',
   module: {
     rules: [
       {
@@ -53,4 +53,7 @@ module.exports = {
       `,
     }),
   ],
+  optimization: {
+    minimize: false,
+  },
 };
