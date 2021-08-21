@@ -1,12 +1,15 @@
 import { Database, DataItem } from './database';
+import { Jisho } from './jisho';
 
 import { handleLessonCompleted, handleReviewCompleted } from './sessions';
 import { UI } from './ui';
 
 export const database = new Database();
 
-(function () {
+(async function () {
   'use strict';
+
+  console.log(await Jisho.queryTerm('今週'));
 
   if ($ === undefined || $.jStorage === undefined) {
     return;

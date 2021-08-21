@@ -47,7 +47,8 @@ module.exports = {
         // @author       Gorbit99
         // @include      /^https?://((www|preview).)?wanikani.com/
         // @icon         https://www.google.com/s2/favicons?domain=wanikani.com
-        // @grant        none
+        // @grant        GM.xmlhttpRequest
+        // @connect      jisho.org
         // @run-at       document-body
         // ==/UserScript==
       `,

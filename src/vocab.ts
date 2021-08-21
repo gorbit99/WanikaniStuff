@@ -105,6 +105,11 @@ export class Vocab {
       'kanjiCompositionKanji'
     );
 
+    const kanjiCompositionReadingRaw = UI.getArrayInputValues(
+      form,
+      'kanjiCompositionReading'
+    );
+
     const meaning_mnemonic =
       (formData.get('meaningMnemonic') as string) ||
       'No meaning mnemonic was given.';
@@ -117,8 +122,7 @@ export class Vocab {
         kan: kanjiCompositionKanjiRaw[index] ?? '',
         en: kanjiCompositionMeaningRaw[index] ?? '',
         slug: kanjiCompositionKanjiRaw[index] ?? '',
-        //TODO reading thingy
-        ja: '',
+        ja: kanjiCompositionReadingRaw[index] ?? '',
       };
     });
 

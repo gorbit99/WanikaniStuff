@@ -7,6 +7,9 @@ import importKanjiHtml from './importKanji.html';
 import stylesheet from './stylesheet.css';
 import { Kanji } from './kanji';
 import { Vocab } from './vocab';
+import { KanjiApi } from './kanjiapi';
+import { katakanaToHiragana, titleCase } from './utils';
+import { Jisho } from './jisho';
 
 export class UI {
   static outerDiv: HTMLDivElement;
@@ -234,8 +237,8 @@ export class UI {
     ) as HTMLInputElement;
 
     kanji
-        .querySelectorAll('.kanjiCompositionElement')
-        .forEach((elem) => elem.remove());
+      .querySelectorAll('.kanjiCompositionElement')
+      .forEach((elem) => elem.remove());
 
     const template = kanji.querySelector(
       '.kanjiCompositionTemplate'
@@ -248,18 +251,40 @@ export class UI {
     const regex = /[\u4e00-\u9faf]/g;
 
     vocabWord
-        .match(regex)
-        ?.filter((c, index, self) => self.indexOf(c) === index)
-        ?.forEach((c) => {
-          const newEntry = template.content.cloneNode(true) as DocumentFragment;
+      .match(regex)
+      ?.filter((c, index, self) => self.indexOf(c) === index)
+      ?.forEach(async (c) => {
+        let newEntry = template.content.cloneNode(true) as DocumentFragment;
+        newEntry = kanji.appendChild(newEntry);
 
-          const kanjiInput = newEntry.querySelector(
-            '.kanjiCompositionKanji'
-          ) as HTMLInputElement;
-          kanjiInput.value = c;
+        const kanjiInput = newEntry.querySelector(
+          '.kanjiCompositionKanji'
+        ) as HTMLInputElement;
+        kanjiInput.value = c;
 
-          kanji.appendChild(newEntry);
-        });
+        const kanjiData = await KanjiApi.getKanji(c);
+
+        const kanjiMeaning = newEntry.querySelector(
+          '.kanjiCompositionMeaning'
+        ) as HTMLInputElement;
+        kanjiMeaning.value = titleCase(kanjiData.meanings[0] ?? '');
+
+        const kanjiReading = newEntry.querySelector(
+          '.kanjiCompositionReading'
+        ) as HTMLInputElement;
+        kanjiReading.value = katakanaToHiragana(kanjiData.on_readings[0] ?? '');
+      });
+
+    (async () => {
+      const jishoResult = await Jisho.queryTerm(vocabWord);
+
+      const result = jishoResult[0]?.data[0];
+      if (result === undefined) {
+        return;
+      }
+
+      result.
+    })();
   }
 
   private static displayOptionsAddKanji() {
@@ -319,10 +344,10 @@ export class UI {
       const possibleOptions = firstLine.split('\t');
 
       const selectOptions = possibleOptions
-          .map((elem, index) => {
-            return `<option value="${index}">${elem}</option>`;
-          })
-          .join('\n');
+        .map((elem, index) => {
+          return `<option value="${index}">${elem}</option>`;
+        })
+        .join('\n');
 
       UI.additionForm.innerHTML = importVocabHtml;
       UI.additionForm.onsubmit = (submitEvent) => {
@@ -378,10 +403,10 @@ export class UI {
       const possibleOptions = firstLine.split('\t');
 
       const selectOptions = possibleOptions
-          .map((elem, index) => {
-            return `<option value="${index}">${elem}</option>`;
-          })
-          .join('\n');
+        .map((elem, index) => {
+          return `<option value="${index}">${elem}</option>`;
+        })
+        .join('\n');
 
       UI.additionForm.innerHTML = importKanjiHtml;
       UI.additionForm.onsubmit = (submitEvent) => {

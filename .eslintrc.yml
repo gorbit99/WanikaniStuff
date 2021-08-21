@@ -28,7 +28,7 @@ rules:
         body: 1
       CallExpression:
         arguments: 'first'
-      MemberExpression: 2
+      MemberExpression: 1
       VariableDeclarator: 'first'
   linebreak-style:
     - error
