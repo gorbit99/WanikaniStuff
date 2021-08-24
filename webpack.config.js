@@ -42,7 +42,7 @@ module.exports = {
         // ==UserScript==
         // @name         Wanikani Integrated Custom SRS
         // @namespace    http://tampermonkey.net/
-        // @version      0.3.1
+        // @version      0.3.2
         // @description  Adding custom cards to your review queue
         // @author       Gorbit99
         // @include      /^https?://((www|preview).)?wanikani.com/
