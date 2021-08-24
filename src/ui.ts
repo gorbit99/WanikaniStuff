@@ -1,15 +1,16 @@
-import addCardsPanelHtml from './addCardsPanel.html';
-import addVocabHtml from './addVocab.html';
-import addKanjiHtml from './addKanji.html';
-import importVocabHtml from './importVocab.html';
-import importKanjiHtml from './importKanji.html';
+import addCardsPanelHtml from "./addCardsPanel.html";
+import addVocabHtml from "./addVocab.html";
+import addKanjiHtml from "./addKanji.html";
+import importVocabHtml from "./importVocab.html";
+import importKanjiHtml from "./importKanji.html";
 
-import stylesheet from './stylesheet.css';
-import { Kanji } from './kanji';
-import { Vocab } from './vocab';
-import { KanjiApi } from './kanjiapi';
-import { katakanaToHiragana, titleCase } from './utils';
-import { Jisho } from './jisho';
+import stylesheet from "./stylesheet.css";
+import { Kanji } from "./kanji";
+import { Vocab } from "./vocab";
+import { KanjiApi } from "./kanjiapi";
+import { katakanaToHiragana, titleCase } from "./utils";
+import { Jisho } from "./jisho";
+import { ArrayInput } from "./arrayInput";
 
 export class UI {
   static outerDiv: HTMLDivElement;
@@ -17,124 +18,22 @@ export class UI {
   static addTypeForm: HTMLFormElement;
   static additionForm: HTMLFormElement;
 
-  public static addArrayInputs(element: HTMLElement): void {
-    const arrayInputs = element.querySelectorAll('.arrayInput');
-
-    for (const arrayInput of arrayInputs) {
-      const name = arrayInput.getAttribute('name') + '[]';
-
-      const required = arrayInput.getAttribute('required');
-
-      const template = arrayInput.querySelector(
-        '.arrayInputTemplate'
-      ) as HTMLTemplateElement;
-      const inputFields = template.content.querySelectorAll('.arrayInputInput');
-      inputFields.forEach((elem) => {
-        const inputElem = elem as HTMLInputElement;
-        inputElem.name = name;
-        inputElem.required = true;
-      });
-
-      const addButton = document.createElement('button');
-      arrayInput.appendChild(addButton);
-      addButton.classList.add('arrayInputAdd');
-      addButton.textContent = '+';
-
-      const removeAction = (event: Event) => {
-        const target = event.target as HTMLButtonElement;
-        if (target.parentNode === null) {
-          console.error('Somehow a button was attached to nothing?');
-          return;
-        }
-        const parentNode = target.parentNode as HTMLElement;
-        parentNode.remove();
-
-        if (required) {
-          const buttons = arrayInput.querySelectorAll(
-            '.arrayInputRemove'
-          ) as NodeListOf<HTMLButtonElement>;
-          if (buttons[0] !== undefined) {
-            buttons[0].disabled = true;
-          }
-        }
-      };
-
-      if (required) {
-        const newEntry = template.content.cloneNode(true) as DocumentFragment;
-
-        const button = newEntry.querySelector(
-          '.arrayInputRemove'
-        ) as HTMLButtonElement;
-        button.onclick = removeAction;
-        button.disabled = true;
-
-        arrayInput.insertBefore(newEntry, addButton);
-      }
-
-      if (required) {
-        const removeButton = arrayInput.querySelector(
-          '.arrayInputRemove'
-        ) as HTMLButtonElement;
-        removeButton.onclick = removeAction;
-      }
-
-      addButton.onclick = () => {
-        const newEntry = template.content.cloneNode(true) as DocumentFragment;
-
-        if (required) {
-          arrayInput.querySelectorAll('.arrayInputRemove').forEach((elem) => {
-            const buttonElem = elem as HTMLButtonElement;
-            buttonElem.disabled = false;
-          });
-        }
-
-        const button = newEntry.querySelector(
-          '.arrayInputRemove'
-        ) as HTMLButtonElement;
-        button.onclick = removeAction;
-
-        arrayInput.insertBefore(newEntry, addButton);
-      };
-    }
-  }
-
-  public static getArrayInputValues(
-    form: HTMLFormElement,
-    name: string
-  ): string[] {
-    const result = form.elements.namedItem(`${name}[]`);
-
-    if (result === undefined || result === null) {
-      return [];
-    }
-
-    if (result instanceof Element) {
-      const inputElem = result as HTMLInputElement;
-      return [inputElem.value];
-    }
-
-    return [...result].map((elem) => {
-      const inputElem = elem as HTMLInputElement;
-      return inputElem.value;
-    });
-  }
-
   public static setup(): void {
-    UI.outerDiv = document.body.appendChild(document.createElement('div'));
-    UI.outerDiv.classList.add('addCardsPanelOuter');
+    UI.outerDiv = document.body.appendChild(document.createElement("div"));
+    UI.outerDiv.classList.add("addCardsPanelOuter");
     UI.outerDiv.innerHTML = addCardsPanelHtml;
 
-    const style = document.head.appendChild(document.createElement('style'));
+    const style = document.head.appendChild(document.createElement("style"));
     style.innerHTML = stylesheet;
 
     UI.addCardsPanel = UI.outerDiv.querySelector(
-      '.addCardsPanel'
+      ".addCardsPanel"
     ) as HTMLDivElement;
     UI.addTypeForm = UI.outerDiv.querySelector(
-      '.addTypeForm'
+      ".addTypeForm"
     ) as HTMLFormElement;
     UI.additionForm = UI.outerDiv.querySelector(
-      '.additionForm'
+      ".additionForm"
     ) as HTMLFormElement;
 
     UI.addTypeForm.onchange = UI.addTypeChange;
@@ -143,27 +42,27 @@ export class UI {
 
     UI.toggleAddDisplay();
 
-    window.addEventListener('load', () => {
-      const sitemap = document.querySelector('#sitemap');
+    window.addEventListener("DOMContentLoaded", () => {
+      const sitemap = document.querySelector("#sitemap");
       if (sitemap) {
         const firstChild = sitemap.firstChild;
 
         const listItem = sitemap.insertBefore(
-          document.createElement('li'),
+          document.createElement("li"),
           firstChild
         );
-        listItem.classList.add('sitemap__section');
+        listItem.classList.add("sitemap__section");
 
         const listButton = listItem.appendChild(
-          document.createElement('button')
+          document.createElement("button")
         );
-        listButton.classList.add('sitemap__section-header');
+        listButton.classList.add("sitemap__section-header");
 
         listButton.innerHTML = `
                 <span lang="ja">???</span>
                 <span lang="en" class="font-sans">Add Custom</span>
             `;
-        listButton.addEventListener('click', UI.toggleAddDisplay);
+        listButton.addEventListener("click", UI.toggleAddDisplay);
       }
 
       UI.changeReviewElementCount();
@@ -172,30 +71,30 @@ export class UI {
 
   public static toggleAddDisplay(): void {
     const outerDiv = document.querySelector(
-      '.addCardsPanelOuter'
+      ".addCardsPanelOuter"
     ) as HTMLDivElement;
-    const display = outerDiv.style['display'];
-    outerDiv.style['display'] = display === 'none' ? 'flex' : 'none';
+    const display = outerDiv.style["display"];
+    outerDiv.style["display"] = display === "none" ? "flex" : "none";
   }
 
   private static addTypeChange() {
-    const form = document.querySelector('.addTypeForm') as HTMLFormElement;
+    const form = document.querySelector(".addTypeForm") as HTMLFormElement;
 
     const formData = new FormData(form);
 
-    const addType = formData.get('addType');
-    const itemType = formData.get('itemType');
+    const addType = formData.get("addType");
+    const itemType = formData.get("itemType");
 
     UI.removeAddDisplay();
 
-    if (addType === 'add') {
-      if (itemType === 'vocab') {
+    if (addType === "add") {
+      if (itemType === "vocab") {
         UI.displayOptionsAddVocab();
       } else {
         UI.displayOptionsAddKanji();
       }
     } else {
-      if (itemType === 'vocab') {
+      if (itemType === "vocab") {
         UI.displayOptionsImportVocab();
       } else {
         UI.displayOptionsImportKanji();
@@ -204,13 +103,13 @@ export class UI {
   }
 
   private static removeAddDisplay() {
-    const chooseDeck = document.querySelector('#chooseDeck');
+    const chooseDeck = document.querySelector("#chooseDeck");
     chooseDeck && chooseDeck.remove();
 
-    const chooseDeckLabel = document.querySelector('#chooseDeckLabel');
+    const chooseDeckLabel = document.querySelector("#chooseDeckLabel");
     chooseDeckLabel && chooseDeckLabel.remove();
 
-    UI.additionForm.innerHTML = '';
+    UI.additionForm.innerHTML = "";
   }
 
   private static displayOptionsAddVocab() {
@@ -225,65 +124,126 @@ export class UI {
       }
     };
 
-    const vocab = UI.additionForm.querySelector('#vocab') as HTMLInputElement;
-    vocab.addEventListener('input', UI.onVocabInput);
+    const vocab = UI.additionForm.querySelector("#vocab") as HTMLInputElement;
+    vocab.addEventListener("keyup", (keyboardEvent) => {
+      if (keyboardEvent.code === "Enter") {
+        UI.onVocabChange(keyboardEvent);
+      }
+    });
 
-    UI.addArrayInputs(UI.additionForm);
+    ArrayInput.setupElementsOn(UI.additionForm);
   }
 
-  private static onVocabInput(inputEvent: Event) {
+  private static onVocabChange(changeEvent: Event) {
     const kanji = UI.additionForm.querySelector(
-      '.kanjiComposition'
+      "#kanjiComposition"
     ) as HTMLInputElement;
 
-    kanji
-      .querySelectorAll('.kanjiCompositionElement')
-      .forEach((elem) => elem.remove());
-
-    const template = kanji.querySelector(
-      '.kanjiCompositionTemplate'
-    ) as HTMLTemplateElement;
-
-    const vocab = inputEvent.target as HTMLInputElement;
+    console.log(changeEvent);
+    const vocab = changeEvent.target as HTMLInputElement;
 
     const vocabWord = vocab.value;
 
-    const regex = /[\u4e00-\u9faf]/g;
+    (async () => {
+      const kanjiCompositionArrayInput = new ArrayInput(kanji);
 
-    vocabWord
-      .match(regex)
-      ?.filter((c, index, self) => self.indexOf(c) === index)
-      ?.forEach(async (c) => {
-        let newEntry = template.content.cloneNode(true) as DocumentFragment;
-        newEntry = kanji.appendChild(newEntry);
+      kanjiCompositionArrayInput.clear();
 
-        const kanjiInput = newEntry.querySelector(
-          '.kanjiCompositionKanji'
-        ) as HTMLInputElement;
-        kanjiInput.value = c;
+      const regex = /[\u4e00-\u9faf]/g;
 
-        const kanjiData = await KanjiApi.getKanji(c);
+      vocabWord
+        .match(regex)
+        ?.filter((c, index, self) => self.indexOf(c) === index)
+        ?.forEach(async (c) => {
+          const newEntry = kanjiCompositionArrayInput.addField();
 
-        const kanjiMeaning = newEntry.querySelector(
-          '.kanjiCompositionMeaning'
-        ) as HTMLInputElement;
-        kanjiMeaning.value = titleCase(kanjiData.meanings[0] ?? '');
+          const kanjiCharacter = newEntry.querySelector(
+            ".kanjiCompositionKanji"
+          ) as HTMLInputElement;
+          kanjiCharacter.value = c;
 
-        const kanjiReading = newEntry.querySelector(
-          '.kanjiCompositionReading'
-        ) as HTMLInputElement;
-        kanjiReading.value = katakanaToHiragana(kanjiData.on_readings[0] ?? '');
-      });
+          const kanjiData = await KanjiApi.getKanji(c);
+
+          const kanjiMeaning = newEntry.querySelector(
+            ".kanjiCompositionMeaning"
+          ) as HTMLInputElement;
+          kanjiMeaning.value = titleCase(kanjiData.meanings[0] ?? "");
+
+          const kanjiReading = newEntry.querySelector(
+            ".kanjiCompositionReading"
+          ) as HTMLInputElement;
+          kanjiReading.value = katakanaToHiragana(
+            kanjiData.on_readings[0] ?? ""
+          );
+        });
+    })();
 
     (async () => {
       const jishoResult = await Jisho.queryTerm(vocabWord);
 
-      const result = jishoResult[0]?.data[0];
+      if (jishoResult.meta.status !== 200) {
+        return;
+      }
+
+      const result = jishoResult.data[0];
       if (result === undefined) {
         return;
       }
 
-      result.
+      const filteredSenses = result.senses.filter(
+        (sense) => !sense.parts_of_speech.includes("Wikipedia definition")
+      );
+
+      const meanings = filteredSenses
+        .map((sense) => sense.english_definitions[0] ?? "")
+        .map((meaning) => titleCase(meaning));
+
+      const meaningElement = UI.additionForm.querySelector(
+        "#meaning"
+      ) as HTMLDivElement;
+      const meaningArrayInput = new ArrayInput(meaningElement);
+
+      meaningArrayInput.fill(meanings.length, (container, i) => {
+        const inputField = container.querySelector(
+          ".arrayInputInput"
+        ) as HTMLInputElement;
+        inputField.value = meanings[i] ?? "";
+      });
+
+      const partsOfSpeech = filteredSenses
+        .map((sense) => sense.parts_of_speech)
+        .flat()
+        .filter((val, i, self) => self.indexOf(val) === i);
+
+      const partsOfSpeechElement = UI.additionForm.querySelector(
+        "#partsOfSpeech"
+      ) as HTMLDivElement;
+      const partsOfSpeechArrayInput = new ArrayInput(partsOfSpeechElement);
+
+      partsOfSpeechArrayInput.fill(partsOfSpeech.length, (container, i) => {
+        const inputField = container.querySelector(
+          ".arrayInputInput"
+        ) as HTMLInputElement;
+        inputField.value = partsOfSpeech[i] as string;
+      });
+
+      const readings = result.japanese
+        .filter((japanese) => japanese.word === vocabWord)
+        .map((japanese) => japanese.reading);
+
+      if (readings.length > 0) {
+        const readingElement = UI.additionForm.querySelector(
+          "#reading"
+        ) as HTMLDivElement;
+        const readingArrayInput = new ArrayInput(readingElement);
+
+        readingArrayInput.fill(readings.length, (container, i) => {
+          const inputField = container.querySelector(
+            ".arrayInputInput"
+          ) as HTMLInputElement;
+          inputField.value = readings[i] as string;
+        });
+      }
     })();
   }
 
@@ -298,25 +258,25 @@ export class UI {
       }
     };
 
-    UI.addArrayInputs(UI.additionForm);
+    ArrayInput.setupElementsOn(UI.additionForm);
   }
 
   private static displayOptionsImportVocab() {
     const buttonLabel = UI.outerDiv.insertBefore(
-      document.createElement('label'),
+      document.createElement("label"),
       UI.additionForm
     ) as HTMLLabelElement;
-    buttonLabel.htmlFor = 'chooseDeck';
-    buttonLabel.textContent = 'Choose deck';
-    buttonLabel.id = 'chooseDeckLabel';
+    buttonLabel.htmlFor = "chooseDeck";
+    buttonLabel.textContent = "Choose deck";
+    buttonLabel.id = "chooseDeckLabel";
 
     const buttonInput = UI.outerDiv.insertBefore(
-      document.createElement('input'),
+      document.createElement("input"),
       UI.additionForm
     );
-    buttonInput.type = 'file';
-    buttonInput.accept = 'text/plain';
-    buttonInput.id = 'chooseDeck';
+    buttonInput.type = "file";
+    buttonInput.accept = "text/plain";
+    buttonInput.id = "chooseDeck";
     buttonInput.onchange = UI.importVocabFileChange;
   }
 
@@ -339,15 +299,15 @@ export class UI {
       const target = event.target as FileReader;
       const result = target.result as string;
 
-      const firstLine = result.split('\n')[0] ?? '';
+      const firstLine = result.split("\n")[0] ?? "";
 
-      const possibleOptions = firstLine.split('\t');
+      const possibleOptions = firstLine.split("\t");
 
       const selectOptions = possibleOptions
         .map((elem, index) => {
           return `<option value="${index}">${elem}</option>`;
         })
-        .join('\n');
+        .join("\n");
 
       UI.additionForm.innerHTML = importVocabHtml;
       UI.additionForm.onsubmit = (submitEvent) => {
@@ -359,7 +319,7 @@ export class UI {
           UI.addTypeChange();
         }
       };
-      [...UI.additionForm.querySelectorAll('[to-fill=\'true\']')].map(
+      [...UI.additionForm.querySelectorAll("[to-fill='true']")].map(
         (item) => (item.innerHTML += selectOptions)
       );
     };
@@ -369,20 +329,20 @@ export class UI {
 
   private static displayOptionsImportKanji() {
     const buttonLabel = UI.outerDiv.insertBefore(
-      document.createElement('label'),
+      document.createElement("label"),
       UI.additionForm
     );
-    buttonLabel.htmlFor = 'chooseDeck';
-    buttonLabel.textContent = 'Choose deck';
-    buttonLabel.id = 'chooseDeckLabel';
+    buttonLabel.htmlFor = "chooseDeck";
+    buttonLabel.textContent = "Choose deck";
+    buttonLabel.id = "chooseDeckLabel";
 
     const buttonInput = UI.outerDiv.insertBefore(
-      document.createElement('input'),
+      document.createElement("input"),
       UI.additionForm
     );
-    buttonInput.type = 'file';
-    buttonInput.accept = 'text/plain';
-    buttonInput.id = 'chooseDeck';
+    buttonInput.type = "file";
+    buttonInput.accept = "text/plain";
+    buttonInput.id = "chooseDeck";
     buttonInput.onchange = UI.importKanjiFileChange;
   }
 
@@ -398,15 +358,15 @@ export class UI {
 
       const result = target.result as string;
 
-      const firstLine = result.split('\n')[0] ?? '';
+      const firstLine = result.split("\n")[0] ?? "";
 
-      const possibleOptions = firstLine.split('\t');
+      const possibleOptions = firstLine.split("\t");
 
       const selectOptions = possibleOptions
         .map((elem, index) => {
           return `<option value="${index}">${elem}</option>`;
         })
-        .join('\n');
+        .join("\n");
 
       UI.additionForm.innerHTML = importKanjiHtml;
       UI.additionForm.onsubmit = (submitEvent) => {
@@ -419,7 +379,7 @@ export class UI {
         }
       };
 
-      [...UI.additionForm.querySelectorAll('[to-fill=\'true\']')].map(
+      [...UI.additionForm.querySelectorAll("[to-fill='true']")].map(
         (item) => (item.innerHTML += selectOptions)
       );
     };
@@ -433,44 +393,44 @@ export class UI {
 
   public static changeReviewElementCount(): void {
     const reviewButton = document.querySelector(
-      '.lessons-and-reviews__reviews-button'
+      ".lessons-and-reviews__reviews-button"
     ) as HTMLButtonElement;
     if (reviewButton) {
-      $.getJSON('/review/queue', (data) => {
+      $.getJSON("/review/queue", (data) => {
         const count = data.length;
 
         UI.reviewCountToButtonClass(count, reviewButton);
 
         const numberSpan = document.querySelector(
-          '.lessons-and-reviews__reviews-button > span'
+          ".lessons-and-reviews__reviews-button > span"
         ) as HTMLSpanElement;
         numberSpan.textContent = count;
       });
 
       const lessonButton = document.querySelector(
-        '.lessons-and-reviews__lessons-button'
+        ".lessons-and-reviews__lessons-button"
       ) as HTMLButtonElement;
-      $.getJSON('/lesson/queue', (data) => {
+      $.getJSON("/lesson/queue", (data) => {
         const count = data.queue.length;
 
         UI.lessonCountToButtonClass(count, lessonButton);
 
         const numberSpan = document.querySelector(
-          '.lessons-and-reviews__lessons-button > span'
+          ".lessons-and-reviews__lessons-button > span"
         ) as HTMLSpanElement;
         numberSpan.textContent = count;
       });
     }
 
-    const startReviewQueueCount = document.querySelector('#review-queue-count');
+    const startReviewQueueCount = document.querySelector("#review-queue-count");
     if (startReviewQueueCount) {
-      $.getJSON('/review/queue', (data) => {
+      $.getJSON("/review/queue", (data) => {
         const count = data.length;
         const startReviewButton = document.querySelector(
-          '#start-session > a'
+          "#start-session > a"
         ) as HTMLButtonElement;
         if (count !== 0) {
-          startReviewButton.classList.remove('disabled');
+          startReviewButton.classList.remove("disabled");
           startReviewButton.replaceWith(startReviewButton.cloneNode(true));
         }
 
@@ -478,15 +438,15 @@ export class UI {
       });
     }
 
-    const startLessonQueueCount = document.querySelector('#lesson-queue-count');
+    const startLessonQueueCount = document.querySelector("#lesson-queue-count");
     if (startLessonQueueCount) {
-      $.getJSON('/lesson/queue', (data) => {
+      $.getJSON("/lesson/queue", (data) => {
         const count = data.queue.length;
         const startLessonButton = document.querySelector(
-          '#start-session > a'
+          "#start-session > a"
         ) as HTMLButtonElement;
         if (count !== 0) {
-          startLessonButton.classList.remove('disabled');
+          startLessonButton.classList.remove("disabled");
           startLessonButton.replaceWith(startLessonButton.cloneNode(true));
         }
 
@@ -501,7 +461,7 @@ export class UI {
     UI.countToButtonClass(
       count,
       node,
-      'lessons-and-reviews__reviews-button--',
+      "lessons-and-reviews__reviews-button--",
       reviewStages
     );
   }
@@ -512,7 +472,7 @@ export class UI {
     UI.countToButtonClass(
       count,
       node,
-      'lessons-and-reviews__lessons-button--',
+      "lessons-and-reviews__lessons-button--",
       lessonStages
     );
   }

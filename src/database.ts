@@ -1,5 +1,5 @@
-import { KanjiData, KanjiJSONData } from './kanji';
-import { VocabData, VocabJSONData } from './vocab';
+import { KanjiData, KanjiJSONData } from "./kanji";
+import { VocabData, VocabJSONData } from "./vocab";
 
 export type DataItem = KanjiData | VocabData;
 
@@ -11,11 +11,11 @@ export class Database {
   }
 
   load(): void {
-    this.data = $.jStorage.get('customCards', []);
+    this.data = $.jStorage.get("customCards", []);
   }
 
   save(): void {
-    $.jStorage.set('customCards', this.data);
+    $.jStorage.set("customCards", this.data);
   }
 
   migrate(): void {
@@ -45,8 +45,8 @@ export class Database {
               stroke: item.stroke,
               meaning_explanation: item.meaning_explanation,
               reading_explanation: item.reading_explanation,
-              en: item.en.join(', '),
-              kana: item.kana.join(', '),
+              en: item.en.join(", "),
+              kana: item.kana.join(", "),
               sentences: item.sentences,
               meaning_note: item.meaning_note,
               reading_note: item.reading_note,
@@ -73,7 +73,7 @@ export class Database {
               meaning_hint: item.meaning_hint,
               reading_mnemonic: item.reading_mnemonic,
               reading_hint: item.reading_hint,
-              en: item.en.join(', '),
+              en: item.en.join(", "),
               meaning_note: item.meaning_note,
               reading_note: item.reading_note,
               related: item.related,
@@ -101,7 +101,7 @@ export class Database {
         const reviewData: any = {};
 
         for (const key in item) {
-          if (key === 'collocations' || key === 'kanji') {
+          if (key === "collocations" || key === "kanji") {
             lessonData[key] = item[key];
           } else {
             reviewData[key] = item[key];
@@ -200,7 +200,7 @@ export class Database {
   fromJSONEndpoint(
     endpoint: string
   ): VocabJSONData | KanjiJSONData | undefined {
-    const id = endpoint.slice(endpoint.lastIndexOf('/') + 1);
+    const id = endpoint.slice(endpoint.lastIndexOf("/") + 1);
     return this.get(id)?.jsonData;
   }
 }

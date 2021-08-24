@@ -37,13 +37,13 @@ interface JishoResult {
 }
 
 export class Jisho {
-  public static queryTerm(searchTerm: string): Promise<JishoResult[]> {
+  public static queryTerm(searchTerm: string): Promise<JishoResult> {
     return new Promise((resolve, reject) => {
       GM.xmlHttpRequest({
         url: `https://jisho.org/api/v1/search/words?keyword=${searchTerm}`,
-        method: 'GET',
+        method: "GET",
         onload: (response) =>
-          resolve(JSON.parse(response.responseText) as JishoResult[]),
+          resolve(JSON.parse(response.responseText) as JishoResult),
         onerror: reject,
       });
     });

@@ -1,6 +1,6 @@
-import { AuxiliaryData } from './common';
-import { UI } from './ui';
-import { database } from './userscript';
+import { ArrayInput } from "./arrayInput";
+import { AuxiliaryData } from "./common";
+import { database } from "./userscript";
 
 interface RadicalCompositionData {
   en: string;
@@ -15,7 +15,7 @@ interface VocabularyExampleData {
   voc: string;
 }
 
-type Emphasis = 'onyomi' | 'kunyomi';
+type Emphasis = "onyomi" | "kunyomi";
 
 interface KanjiReviewData {
   auxiliary_meanings: AuxiliaryData[];
@@ -79,29 +79,39 @@ export class Kanji {
     if (
       database.find(
         (elem) =>
-          'kan' in elem.reviewData &&
-          elem.reviewData.kan === formData.get('kanji')
+          "kan" in elem.reviewData &&
+          elem.reviewData.kan === formData.get("kanji")
       ) !== undefined
     ) {
-      alert('That kanji has been added before!');
+      alert("That kanji has been added before!");
       return false;
     }
 
-    const meanings = UI.getArrayInputValues(form, 'meaning');
+    const meaningArrayInput = new ArrayInput(
+      form.querySelector("#meaning") as HTMLElement
+    );
+    const onyomiArrayInput = new ArrayInput(
+      form.querySelector("#onyomi") as HTMLElement
+    );
+    const kunyomiArrayInput = new ArrayInput(
+      form.querySelector("#kunyomi") as HTMLElement
+    );
+
+    const meanings = meaningArrayInput.getValues();
 
     const meaning_mnemonic =
-      (formData.get('meaningMnemonic') as string) ||
-      'No meaning mnemonic was given.';
+      (formData.get("meaningMnemonic") as string) ||
+      "No meaning mnemonic was given.";
 
     const meaning_hint =
-      (formData.get('meaningHint') as string) || 'No meaning hint was given.';
+      (formData.get("meaningHint") as string) || "No meaning hint was given.";
 
     const reading_mnemonic =
-      (formData.get('readingMnemonic') as string) ||
-      'No reading mnemonic was given.';
+      (formData.get("readingMnemonic") as string) ||
+      "No reading mnemonic was given.";
 
     const reading_hint =
-      (formData.get('readingHint') as string) || 'No reading hint was given.';
+      (formData.get("readingHint") as string) || "No reading hint was given.";
 
     const newEntry: KanjiData = {
       version: 1,
@@ -109,13 +119,13 @@ export class Kanji {
       reviewData: {
         auxiliary_meanings: [],
         auxiliary_readings: [],
-        emph: formData.get('emphasis') as Emphasis,
+        emph: formData.get("emphasis") as Emphasis,
         en: meanings,
-        id: 'c' + database.getNextId(),
-        kan: formData.get('kanji') as string,
-        kun: UI.getArrayInputValues(form, 'kunyomi'),
+        id: "c" + database.getNextId(),
+        kan: formData.get("kanji") as string,
+        kun: kunyomiArrayInput.getValues(),
         nanori: [],
-        on: UI.getArrayInputValues(form, 'onyomi'),
+        on: onyomiArrayInput.getValues(),
         radicals: [],
         srs: 0,
         syn: [],
@@ -125,7 +135,7 @@ export class Kanji {
       },
 
       jsonData: {
-        en: meanings.join(', '),
+        en: meanings.join(", "),
         meaning_hint: meaning_hint,
         meaning_mnemonic: meaning_mnemonic,
         meaning_note: null,
@@ -139,15 +149,15 @@ export class Kanji {
       lessonData: {
         auxiliary_meanings: [],
         auxiliary_readings: [],
-        emph: formData.get('emphasis') as Emphasis,
+        emph: formData.get("emphasis") as Emphasis,
         en: meanings,
-        id: 'c' + database.getNextId(),
-        kan: formData.get('kanji') as string,
-        kun: UI.getArrayInputValues(form, 'kunyomi'),
+        id: "c" + database.getNextId(),
+        kan: formData.get("kanji") as string,
+        kun: kunyomiArrayInput.getValues(),
         mhnt: meaning_hint,
         mmne: meaning_mnemonic,
         nanori: [],
-        on: UI.getArrayInputValues(form, 'onyomi'),
+        on: onyomiArrayInput.getValues(),
         radicals: [],
         rhnt: reading_hint,
         rmne: reading_mnemonic,
@@ -165,7 +175,7 @@ export class Kanji {
     const formData = new FormData(form);
 
     const chooseDeckInput = document.querySelector(
-      '#chooseDeck'
+      "#chooseDeck"
     ) as HTMLInputElement;
 
     const file = chooseDeckInput.files?.[0];
@@ -179,50 +189,50 @@ export class Kanji {
 
       const text = target.result as string;
 
-      const lines = text.split('\n').map((line: string) => line.split('\t'));
+      const lines = text.split("\n").map((line: string) => line.split("\t"));
 
       for (const line of lines) {
-        const kanji = line[parseInt(formData.get('vocab') as string)];
+        const kanji = line[parseInt(formData.get("vocab") as string)];
 
         if (
           database.find(
-            (elem) => 'kan' in elem.reviewData && elem.reviewData.kan === kanji
+            (elem) => "kan" in elem.reviewData && elem.reviewData.kan === kanji
           ) !== undefined
         ) {
           continue;
         }
 
         const meaning_mnemonicId = parseInt(
-          formData.get('meaningMnemonic') as string
+          formData.get("meaningMnemonic") as string
         );
         const reading_mnemonicId = parseInt(
-          formData.get('readingMnemonic') as string
+          formData.get("readingMnemonic") as string
         );
-        const meaning_hintId = parseInt(formData.get('meaningHint') as string);
-        const reading_hintId = parseInt(formData.get('readingHint') as string);
+        const meaning_hintId = parseInt(formData.get("meaningHint") as string);
+        const reading_hintId = parseInt(formData.get("readingHint") as string);
 
         const meaning_mnemonic =
           meaning_mnemonicId === -1
-            ? 'No meaning mnemonic was given.'
-            : line[meaning_mnemonicId] ?? '';
+            ? "No meaning mnemonic was given."
+            : line[meaning_mnemonicId] ?? "";
 
         const meaning_hint =
           meaning_hintId === -1
-            ? 'No meaning hint was given.'
-            : line[meaning_hintId] ?? '';
+            ? "No meaning hint was given."
+            : line[meaning_hintId] ?? "";
 
         const reading_mnemonic =
           reading_mnemonicId === -1
-            ? 'No reading mnemonic was given.'
-            : line[reading_mnemonicId] ?? '';
+            ? "No reading mnemonic was given."
+            : line[reading_mnemonicId] ?? "";
 
         const reading_hint =
           reading_hintId === -1
-            ? 'No reading hint was given.'
-            : line[reading_hintId] ?? '';
+            ? "No reading hint was given."
+            : line[reading_hintId] ?? "";
 
         const getField = (field: string): string => {
-          return line[parseInt(formData.get(field) as string)] ?? '';
+          return line[parseInt(formData.get(field) as string)] ?? "";
         };
 
         const newEntry: KanjiData = {
@@ -231,13 +241,13 @@ export class Kanji {
           reviewData: {
             auxiliary_meanings: [],
             auxiliary_readings: [],
-            emph: getField('emphasis') as Emphasis,
-            en: [getField('meaning')],
-            id: 'c' + nextId,
-            kan: getField('kanji'),
-            kun: [getField('kunyomi')],
+            emph: getField("emphasis") as Emphasis,
+            en: [getField("meaning")],
+            id: "c" + nextId,
+            kan: getField("kanji"),
+            kun: [getField("kunyomi")],
             nanori: [],
-            on: [getField('onyomi')],
+            on: [getField("onyomi")],
             srs: 0,
             syn: [],
             radicals: [],
@@ -252,7 +262,7 @@ export class Kanji {
             meaning_hint: meaning_hint,
             reading_mnemonic: reading_mnemonic,
             reading_hint: reading_hint,
-            en: getField('meaning'),
+            en: getField("meaning"),
             meaning_note: null,
             reading_note: null,
             related: [],
@@ -261,13 +271,13 @@ export class Kanji {
           lessonData: {
             auxiliary_meanings: [],
             auxiliary_readings: [],
-            emph: getField('emphasis') as Emphasis,
-            en: [getField('meaning')],
-            id: 'c' + nextId,
-            kan: getField('kanji'),
-            kun: [getField('kunyomi')],
+            emph: getField("emphasis") as Emphasis,
+            en: [getField("meaning")],
+            id: "c" + nextId,
+            kan: getField("kanji"),
+            kun: [getField("kunyomi")],
             nanori: [],
-            on: [getField('onyomi')],
+            on: [getField("onyomi")],
             mmne: meaning_mnemonic,
             mhnt: meaning_hint,
             rmne: reading_mnemonic,

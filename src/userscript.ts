@@ -1,15 +1,12 @@
-import { Database, DataItem } from './database';
-import { Jisho } from './jisho';
+import { Database, DataItem } from "./database";
 
-import { handleLessonCompleted, handleReviewCompleted } from './sessions';
-import { UI } from './ui';
+import { handleLessonCompleted, handleReviewCompleted } from "./sessions";
+import { UI } from "./ui";
 
 export const database = new Database();
 
-(async function () {
-  'use strict';
-
-  console.log(await Jisho.queryTerm('今週'));
+(function () {
+  "use strict";
 
   if ($ === undefined || $.jStorage === undefined) {
     return;
@@ -32,46 +29,46 @@ export const database = new Database();
     a: string | JQuery.AjaxSettings,
     b?: JQuery.AjaxSettings | undefined
   ): JQuery.jqXHR {
-    if (typeof a === 'string') {
+    if (typeof a === "string") {
       return originalAjax(a, b);
     }
 
     const data = a;
 
     if (
-      data.url === '/json/progress' &&
-      data.type === 'PUT' &&
-      data.dataType === 'json'
+      data.url === "/json/progress" &&
+      data.type === "PUT" &&
+      data.dataType === "json"
     ) {
       //eslint-disable-next-line @typescript-eslint/no-explicit-any
       const incorrectData = data.data as any;
       for (const item in incorrectData) {
-        if (item.startsWith('c')) {
-          const incorrectArray = incorrectData[item] as [number, number | ''];
+        if (item.startsWith("c")) {
+          const incorrectArray = incorrectData[item] as [number, number | ""];
           handleReviewCompleted(item, incorrectArray);
           delete incorrectData[item];
         }
       }
       return originalAjax(data);
-    } else if (data.url === '/json/lesson/completed' && data.type === 'PUT') {
+    } else if (data.url === "/json/lesson/completed" && data.type === "PUT") {
       //eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sessionData = data.data as any;
       for (const item of sessionData.keys.filter(
-        (id: number | string) => typeof id === 'string' && id.startsWith('c')
+        (id: number | string) => typeof id === "string" && id.startsWith("c")
       )) {
         handleLessonCompleted(item);
       }
 
       sessionData.keys = sessionData.keys.filter(
         (item: number | string) =>
-          typeof item !== 'string' || !item.startsWith('c')
+          typeof item !== "string" || !item.startsWith("c")
       );
 
       return originalAjax(data);
     } else if (
-      data.url === '/review/queue' &&
-      data.type === 'get' &&
-      data.dataType === 'json'
+      data.url === "/review/queue" &&
+      data.type === "get" &&
+      data.dataType === "json"
     ) {
       const originalSuccess = data.success as (
         //eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,7 +81,6 @@ export const database = new Database();
           originalSuccess(
             items.concat(
               database.getDueReviews().map((item: DataItem) => {
-                console.log(item.reviewData);
                 return item.reviewData;
               })
             ),
@@ -96,9 +92,9 @@ export const database = new Database();
 
       return originalAjax(data);
     } else if (
-      data.url === '/lesson/queue' &&
-      data.type === 'get' &&
-      data.dataType === 'json'
+      data.url === "/lesson/queue" &&
+      data.type === "get" &&
+      data.dataType === "json"
     ) {
       const originalSuccess = data.success as (
         //eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -110,10 +106,10 @@ export const database = new Database();
         const additionalQueue = database.getDueLessons();
         const additionalRadicals = 0;
         const additionalKanji = additionalQueue.filter(
-          (item) => 'kan' in item.reviewData
+          (item) => "kan" in item.reviewData
         ).length;
         const additionalVocab = additionalQueue.filter(
-          (item) => 'voc' in item.reviewData
+          (item) => "voc" in item.reviewData
         ).length;
         items.count.rad += additionalRadicals;
         items.count.kan += additionalKanji;
@@ -128,9 +124,9 @@ export const database = new Database();
 
       return originalAjax(data);
     } else if (
-      data.url?.startsWith('/json/') &&
-      data.type === 'get' &&
-      data.dataType === 'json'
+      data.url?.startsWith("/json/") &&
+      data.type === "get" &&
+      data.dataType === "json"
     ) {
       const result = database.fromJSONEndpoint(data.url);
       if (result) {
