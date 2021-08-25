@@ -4,21 +4,65 @@ import { VocabData, VocabJSONData } from "./vocab";
 export type DataItem = KanjiData | VocabData;
 
 export class Database {
-  data: DataItem[];
+  private data: DataItem[] = [];
+  private databaseInstance: IDBDatabase | undefined;
 
-  constructor() {
+  public constructor() {
     this.data = [];
   }
 
-  load(): void {
-    this.data = $.jStorage.get("customCards", []);
+  public load(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) {
+        console.error(
+          "Your browser doesn't support indexedDB, consider upgrading!"
+        );
+        reject();
+        return;
+      }
+
+      const openRequest = window.indexedDB.open("WICSCards", 1);
+
+      //eslint-disable-next-line @typescript-eslint/no-explicit-any
+      openRequest.onsuccess = (event: any) => {
+        this.databaseInstance = event.result;
+
+        resolve();
+      };
+
+      //eslint-disable-next-line @typescript-eslint/no-explicit-any
+      openRequest.onerror = (event: any) => {
+        console.error(
+          "Couldn't create database, probably because it wasn't allowed!",
+          `Error code: ${event.target.errorCode}`
+        );
+
+        reject();
+      };
+
+      //eslint-disable-next-line @typescript-eslint/no-explicit-any
+      openRequest.onupgradeneeded = (event: any) => {
+        this.databaseInstance = event.target.result as IDBDatabase;
+
+        const vocabReviewData = this.databaseInstance.createObjectStore(
+          "vocabReviewData",
+          {
+            keyPath: "id",
+          }
+        );
+
+        vocabReviewData.createIndex("voc", "voc", { unique: true });
+      };
+
+      //this.data = $.jStorage.get("customCards", []);
+    });
   }
 
-  save(): void {
+  public save(): void {
     $.jStorage.set("customCards", this.data);
   }
 
-  migrate(): void {
+  public migrate(): void {
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rawData: any = this.data;
     //eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -154,7 +198,7 @@ export class Database {
     this.save();
   }
 
-  getDueReviews(): DataItem[] {
+  public getDueReviews(): DataItem[] {
     return this.data.filter(
       (item) =>
         (!item.reviewData.due_date ||
@@ -164,29 +208,29 @@ export class Database {
     );
   }
 
-  getDueLessons(): DataItem[] {
+  public getDueLessons(): DataItem[] {
     const items = this.data.filter((item) => item.reviewData.srs === 0);
 
     return items;
   }
 
-  get(id: string): DataItem | undefined {
+  public get(id: string): DataItem | undefined {
     return this.data.find((item) => item.reviewData.id === id);
   }
 
-  getIndex(id: string): number {
+  public getIndex(id: string): number {
     return this.data.findIndex((item) => item.reviewData.id === id);
   }
 
-  find(predicate: (_item: DataItem) => boolean): DataItem | undefined {
+  public find(predicate: (_item: DataItem) => boolean): DataItem | undefined {
     return this.data.find(predicate);
   }
 
-  add(entry: DataItem): void {
+  public add(entry: DataItem): void {
     this.data.push(entry);
   }
 
-  getNextId(): number {
+  public getNextId(): number {
     const max = Math.max(
       ...this.data.map((item) => parseInt(item.reviewData.id.slice(1)))
     );
@@ -197,7 +241,7 @@ export class Database {
     return max + 1;
   }
 
-  fromJSONEndpoint(
+  public fromJSONEndpoint(
     endpoint: string
   ): VocabJSONData | KanjiJSONData | undefined {
     const id = endpoint.slice(endpoint.lastIndexOf("/") + 1);
