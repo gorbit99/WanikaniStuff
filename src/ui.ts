@@ -42,7 +42,7 @@ export class UI {
 
     UI.toggleAddDisplay();
 
-    window.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("load", () => {
       const sitemap = document.querySelector("#sitemap");
       if (sitemap) {
         const firstChild = sitemap.firstChild;
@@ -115,11 +115,11 @@ export class UI {
   private static displayOptionsAddVocab() {
     UI.additionForm.innerHTML = addVocabHtml;
 
-    UI.additionForm.onsubmit = (submitEvent) => {
+    UI.additionForm.onsubmit = async (submitEvent) => {
       submitEvent.preventDefault();
 
       const form = submitEvent.target as HTMLFormElement;
-      if (Vocab.addVocab(form)) {
+      if (await Vocab.addVocab(form)) {
         UI.addTypeChange();
       }
     };
@@ -139,7 +139,6 @@ export class UI {
       "#kanjiComposition"
     ) as HTMLInputElement;
 
-    console.log(changeEvent);
     const vocab = changeEvent.target as HTMLInputElement;
 
     const vocabWord = vocab.value;
@@ -249,11 +248,11 @@ export class UI {
 
   private static displayOptionsAddKanji() {
     UI.additionForm.innerHTML = addKanjiHtml;
-    UI.additionForm.onsubmit = (submitEvent) => {
+    UI.additionForm.onsubmit = async (submitEvent) => {
       submitEvent.preventDefault();
 
       const target = submitEvent.target as HTMLFormElement;
-      if (Kanji.addKanji(target)) {
+      if (await Kanji.addKanji(target)) {
         UI.addTypeChange();
       }
     };
@@ -391,7 +390,7 @@ export class UI {
     fileReader.readAsText(file);
   }
 
-  public static changeReviewElementCount(): void {
+  private static changeReviewElementCount(): void {
     const reviewButton = document.querySelector(
       ".lessons-and-reviews__reviews-button"
     ) as HTMLButtonElement;

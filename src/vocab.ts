@@ -16,7 +16,7 @@ interface KanjiCompositionData {
   slug: string;
 }
 
-interface VocabReviewData {
+export interface VocabReviewData {
   aud: AudioData[];
   auxiliary_meanings: AuxiliaryData[];
   auxiliary_readings: AuxiliaryData[];
@@ -30,7 +30,7 @@ interface VocabReviewData {
   burned: boolean;
 }
 
-interface VocabLessonData {
+export interface VocabLessonData {
   aud: AudioData[];
   auxiliary_meanings: AuxiliaryData[];
   auxiliary_readings: AuxiliaryData[];
@@ -68,17 +68,10 @@ export interface VocabData {
 }
 
 export class Vocab {
-  public static addVocab(form: HTMLFormElement): boolean {
+  public static async addVocab(form: HTMLFormElement): Promise<boolean> {
     const formData = new FormData(form);
 
-    if (
-      database.find((elem) => {
-        return (
-          "voc" in elem.reviewData &&
-          elem.reviewData.voc === formData.get("vocab")
-        );
-      }) !== undefined
-    ) {
+    if (await database.containsVocab(formData.get("vocab") as string)) {
       alert("That vocab has been added before!");
       return false;
     }
@@ -94,6 +87,7 @@ export class Vocab {
     );
 
     const meanings = meaningArrayInput.getValues();
+    console.log(meanings);
     const readings = readingArrayInput.getValues();
 
     const sentencesRaw = sentencesArrayInput.getValues();
@@ -137,6 +131,8 @@ export class Vocab {
       form.querySelector("#partsOfSpeech") as HTMLElement
     );
 
+    const nextId = await database.getNextId();
+
     const newEntry: VocabData = {
       version: 1,
 
@@ -145,7 +141,7 @@ export class Vocab {
         auxiliary_meanings: [], //No need
         auxiliary_readings: [], //No need
         en: meanings,
-        id: "c" + database.getNextId(),
+        id: "c" + nextId,
         kana: readings,
         srs: 0,
         syn: [], //Later with card management
@@ -174,7 +170,7 @@ export class Vocab {
         auxiliary_readings: [], //No need
         collocations: [], //Todo dunno
         en: meanings,
-        id: "c" + database.getNextId(),
+        id: "c" + nextId,
         kana: readings,
         kanji: kanjiComposition,
         mmne: meaning_mnemonic,
@@ -186,7 +182,6 @@ export class Vocab {
     };
 
     database.add(newEntry);
-    database.save();
 
     return true;
   }
@@ -206,23 +201,19 @@ export class Vocab {
 
     const fileReader = new FileReader();
 
-    fileReader.onload = (event) => {
+    fileReader.onload = async (event) => {
       const target = event.target as FileReader;
 
       const text = target.result as string;
 
       const lines = text.split("\n").map((line) => line.split("\t"));
 
-      let nextId = database.getNextId();
+      let nextId = await database.getNextId();
 
       for (const line of lines) {
-        const vocab = line[parseInt(formData.get("vocab") as string)] ?? "";
+        const vocab = line[parseInt(formData.get("vocab") as string)] as string;
 
-        if (
-          database.find(
-            (elem) => "voc" in elem.reviewData && elem.reviewData.voc === vocab
-          ) !== undefined
-        ) {
+        if (await database.containsVocab(vocab)) {
           continue;
         }
 
@@ -298,8 +289,6 @@ export class Vocab {
 
         nextId++;
       }
-
-      database.save();
 
       return true;
     };

@@ -1,16 +1,19 @@
 import { database } from "./userscript";
 
-export function handleReviewCompleted(id: string, data: [number, number | ""]) {
-  const item = database.get(id);
+export async function handleReviewCompleted(
+  id: string,
+  data: [number, number | ""]
+): Promise<void> {
+  const item = await database.get(id);
 
   if (item === undefined) {
     return;
   }
 
   let srs = item.reviewData.srs;
-  let incorrectMeaning = data[0] ?? 0;
+  const incorrectMeaning = data[0] ?? 0;
   let incorrectReading = data[1] ?? 0;
-  if (incorrectReading == "") {
+  if (incorrectReading === "") {
     incorrectReading = 0;
   }
   const incorrectAmount = incorrectMeaning + incorrectReading;
@@ -32,11 +35,10 @@ export function handleReviewCompleted(id: string, data: [number, number | ""]) {
   item.reviewData.srs = srs;
 
   item.reviewData.due_date = calculateNextDueDate(item.reviewData.srs);
-  database.save();
 }
 
-export function handleLessonCompleted(id: string) {
-  const item = database.get(id);
+export async function handleLessonCompleted(id: string): Promise<void> {
+  const item = await database.get(id);
 
   if (item === undefined) {
     return;
@@ -45,7 +47,6 @@ export function handleLessonCompleted(id: string) {
   item.reviewData.srs = 1;
 
   item.reviewData.due_date = calculateNextDueDate(item.reviewData.srs);
-  database.save();
 }
 
 const millisecondsInHour = 60 * 60 * 1000;

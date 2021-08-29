@@ -17,7 +17,7 @@ interface VocabularyExampleData {
 
 type Emphasis = "onyomi" | "kunyomi";
 
-interface KanjiReviewData {
+export interface KanjiReviewData {
   auxiliary_meanings: AuxiliaryData[];
   auxiliary_readings: AuxiliaryData[];
   emph: Emphasis;
@@ -35,7 +35,7 @@ interface KanjiReviewData {
   burned: boolean;
 }
 
-interface KanjiLessonData {
+export interface KanjiLessonData {
   auxiliary_meanings: AuxiliaryData[];
   auxiliary_readings: AuxiliaryData[];
   emph: Emphasis;
@@ -73,16 +73,10 @@ export interface KanjiData {
 }
 
 export class Kanji {
-  public static addKanji(form: HTMLFormElement): boolean {
+  public static async addKanji(form: HTMLFormElement): Promise<boolean> {
     const formData = new FormData(form);
 
-    if (
-      database.find(
-        (elem) =>
-          "kan" in elem.reviewData &&
-          elem.reviewData.kan === formData.get("kanji")
-      ) !== undefined
-    ) {
+    if (await database.containsKanji(formData.get("kanji") as string)) {
       alert("That kanji has been added before!");
       return false;
     }
@@ -166,7 +160,6 @@ export class Kanji {
     };
 
     database.add(newEntry);
-    database.save();
 
     return true;
   }
@@ -182,23 +175,19 @@ export class Kanji {
 
     const fileReader = new FileReader();
 
-    let nextId = database.getNextId();
-
-    fileReader.onload = (event) => {
+    fileReader.onload = async (event) => {
       const target = event.target as FileReader;
+
+      let nextId = await database.getNextId();
 
       const text = target.result as string;
 
       const lines = text.split("\n").map((line: string) => line.split("\t"));
 
       for (const line of lines) {
-        const kanji = line[parseInt(formData.get("vocab") as string)];
+        const kanji = line[parseInt(formData.get("kanji") as string)] as string;
 
-        if (
-          database.find(
-            (elem) => "kan" in elem.reviewData && elem.reviewData.kan === kanji
-          ) !== undefined
-        ) {
+        if (await database.containsKanji(kanji)) {
           continue;
         }
 
@@ -291,8 +280,6 @@ export class Kanji {
 
         nextId++;
       }
-
-      database.save();
     };
 
     if (file === undefined) {

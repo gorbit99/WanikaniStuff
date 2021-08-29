@@ -1,4 +1,4 @@
-import { Database, DataItem } from "./database";
+import { Database } from "./database";
 
 import { handleLessonCompleted, handleReviewCompleted } from "./sessions";
 import { UI } from "./ui";
@@ -8,6 +8,8 @@ export const database = new Database();
 (function () {
   "use strict";
 
+  console.log(database);
+
   if ($ === undefined || $.jStorage === undefined) {
     return;
   }
@@ -15,7 +17,6 @@ export const database = new Database();
   UI.setup();
 
   database.load();
-  database.migrate();
 
   const originalAjax = $.ajax;
   $.ajax = ajaxOverride;
@@ -77,16 +78,9 @@ export const database = new Database();
         _jqXHR: JQuery.jqXHR
       ) => void;
       if (originalSuccess !== undefined) {
-        data.success = (items, status, jqXHR) => {
-          originalSuccess(
-            items.concat(
-              database.getDueReviews().map((item: DataItem) => {
-                return item.reviewData;
-              })
-            ),
-            status,
-            jqXHR
-          );
+        data.success = async (items, status, jqXHR) => {
+          const dueReviews = await database.getDueReviews();
+          originalSuccess(items.concat(dueReviews), status, jqXHR);
         };
       }
 
@@ -96,49 +90,55 @@ export const database = new Database();
       data.type === "get" &&
       data.dataType === "json"
     ) {
-      const originalSuccess = data.success as (
-        //eslint-disable-next-line @typescript-eslint/no-explicit-any
-        _data: any,
-        _status: string,
-        _jqXHR: JQuery.jqXHR
-      ) => void;
-      data.success = (items, status, jqXHR) => {
-        const additionalQueue = database.getDueLessons();
+      (async () => {
+        const originalSuccess = data.success as (
+          //eslint-disable-next-line @typescript-eslint/no-explicit-any
+          _data: any,
+          _status: string,
+          _jqXHR: JQuery.jqXHR
+        ) => void;
+        data.success = undefined;
+
+        const items = await originalAjax(data);
+
+        const additionalQueue = await database.getDueLessons();
         const additionalRadicals = 0;
         const additionalKanji = additionalQueue.filter(
-          (item) => "kan" in item.reviewData
+          (item) => "kan" in item
         ).length;
         const additionalVocab = additionalQueue.filter(
-          (item) => "voc" in item.reviewData
+          (item) => "voc" in item
         ).length;
         items.count.rad += additionalRadicals;
         items.count.kan += additionalKanji;
         items.count.voc += additionalVocab;
 
-        items.queue = items.queue.concat(
-          additionalQueue.map((item) => item.lessonData)
-        );
+        items.queue = items.queue.concat(additionalQueue);
 
-        originalSuccess(items, status, jqXHR);
-      };
+        originalSuccess(items, status, originalAjax({}));
 
-      return originalAjax(data);
+        console.log("Hello");
+      })();
+
+      return originalAjax({});
     } else if (
       data.url?.startsWith("/json/") &&
       data.type === "get" &&
       data.dataType === "json"
     ) {
-      const result = database.fromJSONEndpoint(data.url);
-      if (result) {
-        const success = data.success as (
-          //eslint-disable-next-line @typescript-eslint/no-explicit-any
-          _data: any,
-          _status?: string,
-          _jqXHR?: JQuery.jqXHR
-        ) => void;
-        success(result);
-        return originalAjax({});
-      }
+      (async () => {
+        const result = await database.fromJSONEndpoint(data.url as string);
+        if (result) {
+          const success = data.success as (
+            //eslint-disable-next-line @typescript-eslint/no-explicit-any
+            _data: any,
+            _status?: string,
+            _jqXHR?: JQuery.jqXHR
+          ) => void;
+          success(result);
+          return originalAjax({});
+        }
+      })();
     }
 
     return originalAjax(data);
