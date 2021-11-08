@@ -1,0 +1,57 @@
+<label for="data-slug">Kanji:</label>
+<input type="text" name="slug" id="data-slug" />
+<label>Meaning:</label>
+<div class="item-list">
+  <template class="item-template">
+    <input type="text" name="en" id="data-en" />
+  </template>
+</div>
+<label for="data-emphasis">Emphasis on:</label>
+<select name="emphasis" id="data-emphasis">
+  <option value="kunyomi">Kunyomi</option>
+  <option value="onyomi">Onyomi</option>
+</select>
+<label>Onyomi:</label>
+<div class="item-list" data-optional>
+  <template class="item-template">
+    <input type="text" name="on" id="data-onyomi" />
+  </template>
+</div>
+<label>Kunyomi:</label>
+<div class="item-list" data-optional>
+  <template class="item-template">
+    <input type="text" name="kun" id="data-kunyomi" />
+  </template>
+</div>
+<label>Nanori:</label>
+<div class="item-list" data-optional>
+  <template class="item-template">
+    <input type="text" name="nanori" id="data-nanori" />
+  </template>
+</div>
+<label for="data-meaning-explanation">Meaning explanation:</label>
+<textarea name="meaning_mnemonic" id="data-meaning-explanation"></textarea>
+<label for="data-reading-explanation">Reading explanation:</label>
+<textarea name="reading_mnemonic" id="data-reading-explanation"></textarea>
+<label for="data-meaning-hint">Meaning hint:</label>
+<textarea name="meaning_hint" id="data-meaning-hint"></textarea>
+<label for="data-reading-hint">Reading hint:</label>
+<textarea name="reading_hint" id="data-reading-hint"></textarea>
+<label>Radical Composition:</label>
+<div class="item-list" data-optional data-groupname="related">
+  <template class="item-template">
+    <label for="data-related-en">En:</label>
+    <input type="text" name="en" id="data-related-en" />
+    <label for="data-related-rad">Radical:</label>
+    <input type="text" name="rad" id="data-related-rad" />
+  </template>
+</div>
+<label>Vocab Examples:</label>
+<div class="item-list" data-optional="" data-groupname="vocabulary">
+  <template class="item-template">
+    <label for="data-vocab-en">En:</label>
+    <input type="text" name="en" id="data-vocab-en" />
+    <label for="data-vocab-ja">Ja:</label>
+    <input type="text" name="ja" id="data-vocab-ja" />
+  </template>
+</div>

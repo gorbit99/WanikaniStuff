@@ -1,0 +1,30 @@
+{
+  "name": "wics",
+  "version": "0.3.2",
+  "description": "",
+  "main": "userscript.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack watch",
+    "build-release": "webpack --mode production --config ./webpack.config.prod.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/greasemonkey": "^4.0.2",
+    "@types/jquery": "^3.5.6",
+    "@types/jstorage": "^0.3.30",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "common-tags": "^1.8.0",
+    "css-loader": "^6.2.0",
+    "html-loader": "^2.1.2",
+    "ts-loader": "^9.2.5",
+    "typescript": "^4.3.5",
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0"
+  },
+  "dependencies": {
+    "idb": "^6.1.5"
+  }
+}

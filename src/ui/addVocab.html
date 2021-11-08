@@ -1,0 +1,42 @@
+<label for="data-slug">Vocab:</label>
+<input type="text" name="slug" id="data-slug" />
+<label>Meaning:</label>
+<div class="item-list">
+  <template class="item-template">
+    <input type="text" name="en" id="data-en" />
+  </template>
+</div>
+<label>Reading:</label>
+<div class="item-list">
+  <template class="item-template">
+    <input type="text" name="kana" id="data-kana" />
+  </template>
+</div>
+<label for="data-meaning-explanation">Meaning mnemonic:</label>
+<textarea name="meaning_mnemonic" id="data-meaning-mnemoni"></textarea>
+<label for="data-reading-explanation">Reading mnemonic:</label>
+<textarea name="reading_mnemonic" id="data-reading-mnemoni"></textarea>
+<label>Parts of speech:</label>
+<div class="item-list" data-optional>
+  <template class="item-template">
+    <input type="text" name="parts_of_speech" id="data-parts-of-speech" />
+  </template>
+</div>
+<label>Example sentences:</label>
+<div class="item-list" data-optional data-groupname="sentences">
+  <template class="item-template">
+    <label for="data-sentences-en">En:</label>
+    <input type="text" name="en" id="data-sentences-en" />
+    <label for="data-sentences-ja">Ja:</label>
+    <input type="text" name="ja" id="data-sentences-ja" />
+  </template>
+</div>
+<label>Kanji composition:</label>
+<div class="item-list" data-readonly data-groupname="related">
+  <template class="item-template">
+    <label for="data-related-kan">Kanji:</label>
+    <input type="text" name="kan" id="data-sentences-kan" />
+    <label for="data-sentences-en">Meaning:</label>
+    <input type="text" name="en" id="data-sentences-en" />
+  </template>
+</div>
