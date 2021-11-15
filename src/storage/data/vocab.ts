@@ -1,3 +1,4 @@
+import { AddFormData } from "../../ui/uiHandler";
 import {
   ItemData,
   JSONData,
@@ -17,8 +18,7 @@ export interface KanjiCompositionData {
   en: string;
   ja: string;
   kan: string;
-  id: string;
-  type: "Kanji";
+  type: string;
   characters: string;
 }
 
@@ -59,24 +59,41 @@ export class VocabData extends ItemData {
   related: KanjiCompositionData[];
   relationships: Relationships;
 
-  public constructor(
-    id: string,
-    en: string[],
-    slug: string,
-    stroke: number,
-    syn: string[],
-    meaning_note: string | null,
-    reading_note: string | null,
-    meaning_mnemonic: string,
-    reading_mnemonic: string,
-    aud: AudioData[],
-    kana: string[],
-    collocations: never[],
-    parts_of_speech: string[],
-    sentences: [string, string][],
-    related: KanjiCompositionData[],
-    relationships: Relationships
-  ) {
+  public constructor(formData: AddFormData) {
+    const id = `cv${formData["slug"] as string}`;
+    const en = formData["en"] as string[];
+    const slug = formData["slug"] as string;
+    const stroke = 0;
+    const syn: string[] = [];
+    const meaning_note = null;
+    const reading_note = null;
+    const meaning_mnemonic = formData["meaning_mnemonic"] as string;
+    const reading_mnemonic = formData["reading_mnemonic"] as string;
+    //TODO audio maybe?
+    const aud: AudioData[] = [];
+    const kana = formData["kana"] as string[];
+    const collocations: never[] = [];
+    const parts_of_speech = formData["parts_of_speech"] as string[];
+    const sentences = (formData["sentences"] as Record<string, string>[]).map(
+      (sentence) =>
+        [sentence["ja"] as string, sentence["en"] as string] as [string, string]
+    );
+    const related = (formData["related"] as Record<string, string>[]).map(
+      (kanji) => {
+        return {
+          en: kanji["en"] as string,
+          ja: kanji["ja"] as string,
+          kan: kanji["kan"] as string,
+          slug: kanji["kan"] as string,
+          type: "Kanji",
+          characters: kanji["kan"] as string,
+        };
+      }
+    );
+    const relationships = {
+      study_material: null,
+    };
+
     super(
       id,
       en,

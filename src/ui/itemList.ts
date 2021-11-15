@@ -1,15 +1,17 @@
 export class ItemList {
-  readonly itemContainer: HTMLElement;
-  readonly template: HTMLTemplateElement;
-  readonly isReadonly: boolean;
-  readonly isOptional: boolean;
+  private readonly root: HTMLElement;
+  private readonly itemContainer: HTMLElement;
+  private readonly template: HTMLTemplateElement;
+  private readonly isReadonly: boolean;
+  private readonly isOptional: boolean;
 
-  readonly valueNames: string[];
+  private readonly valueNames: string[];
 
   constructor(elem: HTMLElement) {
+    this.root = elem;
     this.template = elem.querySelector(".item-template") as HTMLTemplateElement;
 
-    this.valueNames = [...this.template.querySelectorAll("[name]")].map(
+    this.valueNames = [...this.template.content.querySelectorAll("[name]")].map(
       (elem) => (elem as HTMLInputElement).name
     );
 
@@ -40,9 +42,6 @@ export class ItemList {
       if (data[name]) {
         inputElem.value = data[name] as string;
       }
-      if (this.isReadonly) {
-        inputElem.readOnly = true;
-      }
       inputElem.required = true;
     });
 
@@ -60,12 +59,32 @@ export class ItemList {
     this.itemContainer.append(container);
   }
 
-  public getValues(): Record<string, string[]> {
+  public getValues(): Record<string, string>[] {
+    const values = this.valueNames.map((name) =>
+      [...this.itemContainer.querySelectorAll(`[name=${name}]`)].map(
+        (elem) => (elem as HTMLInputElement).value
+      )
+    );
+
+    const objects = (values[0] as string[]).map((_, i) =>
+      Object.fromEntries(
+        values.map((_, j) => [this.valueNames[j], values[j]?.[i]])
+      )
+    );
+
+    return objects;
+  }
+
+  public getValuesAsLists(): Record<string, string[]> {
     return this.valueNames.reduce((record: Record<string, string[]>, name) => {
       record[name] = [
         ...this.itemContainer.querySelectorAll(`[name=${name}]`),
       ].map((elem) => (elem as HTMLInputElement).value);
       return record;
     }, {});
+  }
+
+  public getGroupName(): string | null {
+    return this.root.dataset["groupname"] ?? null;
   }
 }

@@ -9,13 +9,23 @@ interface CardSchema extends DBSchema {
 }
 
 export class Database {
+  private static instance: Database | undefined;
+
+  public static async getInstance(): Promise<Database> {
+    if (Database.instance === undefined) {
+      Database.instance = await Database.init();
+    }
+
+    return Database.instance;
+  }
+
   private db: IDBPDatabase<CardSchema>;
 
   private constructor(db: IDBPDatabase<CardSchema>) {
     this.db = db;
   }
 
-  public static async init(): Promise<Database> {
+  private static async init(): Promise<Database> {
     const db = await openDB<CardSchema>("cardDB", 1, {
       upgrade(db) {
         db.createObjectStore("cards", { keyPath: "id" });

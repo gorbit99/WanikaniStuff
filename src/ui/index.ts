@@ -3,17 +3,34 @@ import addCustomDialogCss from "./addCustomDialog.css";
 import addKanji from "./addKanji.html";
 import addVocab from "./addVocab.html";
 import addCustomButton from "./addCustomButton.html";
-import { ItemList } from "./itemList";
+import { AddKanjiHandler } from "./addKanji";
+import { UIHandler } from "./uiHandler";
+import { AddVocabHandler } from "./addVocab";
+
+interface UIOption {
+  html: string;
+  handler: UIHandler;
+}
 
 export class UI {
   private static instance: UI | undefined;
 
   private dialogContainer: HTMLElement;
   private dataForm: HTMLFormElement | undefined;
-  private itemLists: ItemList[] = [];
 
   private dialogExpanded = false;
   private customButton: HTMLElement | undefined;
+
+  readonly uiOptions = {
+    addKanji: {
+      html: addKanji,
+      handler: new AddKanjiHandler(),
+    },
+    addVocab: {
+      html: addVocab,
+      handler: new AddVocabHandler(),
+    },
+  };
 
   constructor() {
     this.dialogContainer = document.createElement("div");
@@ -36,8 +53,7 @@ export class UI {
       ".data-form"
     ) as HTMLFormElement;
 
-    this.setDataForm(addKanji);
-    this.setDataForm(addVocab);
+    this.setDataForm(this.uiOptions.addVocab);
 
     const customButtonContainer = document.createElement("li");
     customButtonContainer.classList.add("sitemap__section");
@@ -58,13 +74,11 @@ export class UI {
     return UI.instance;
   }
 
-  private setDataForm(html: string) {
+  private setDataForm(uiOption: UIOption) {
     const dataForm = this.dataForm as HTMLFormElement;
-    dataForm.innerHTML = html;
+    dataForm.innerHTML = uiOption.html;
 
-    [...dataForm.querySelectorAll(".item-list")].forEach((elem) =>
-      this.itemLists.push(new ItemList(elem as HTMLElement))
-    );
+    uiOption.handler.hook(dataForm);
   }
 
   private toggleDialog() {

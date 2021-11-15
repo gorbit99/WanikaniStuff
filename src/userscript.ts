@@ -11,6 +11,6 @@ if (!("indexedDB" in window)) {
 
 UI.getInstance().init();
 
-const db = await Database.init();
+const db = await Database.getInstance();
 
 db.getDueReviews();

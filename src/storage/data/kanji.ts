@@ -13,11 +13,11 @@ export interface AudioData {
   voice_actor_id: number;
 }
 
-export interface RadicalCompositionData {
+interface RadicalCompositionData {
   en: string;
   rad: string;
   slug: string;
-  type: "Radical";
+  type: string;
   characters: string;
   characters_image_url: null;
 }
@@ -27,7 +27,7 @@ interface VocabularyExampleData {
   ja: string;
   slug: string;
   voc: string;
-  type: "Vocabulary";
+  type: string;
   characters: string;
 }
 
@@ -76,25 +76,49 @@ export class KanjiData extends ItemData {
   relationships: Relationships;
 
   public constructor(
-    id: string,
-    en: string[],
-    slug: string,
-    stroke: number,
-    syn: string[],
-    meaning_note: string | null,
-    reading_note: string | null,
-    meaning_mnemonic: string,
-    reading_mnemonic: string,
-    emph: Emphasis,
-    kun: string[],
-    nanori: string[],
-    on: string[],
-    vocabulary: VocabularyExampleData[],
-    meaning_hint: string,
-    reading_hint: string,
-    related: RadicalCompositionData[],
-    relationships: Relationships
+    formData: Record<string, string | string[] | Record<string, string>[]>
   ) {
+    const id = `ck${formData["slug"]}`;
+    const en = formData["en"] as string[];
+    const slug = formData["slug"] as string;
+    const stroke = 0;
+    const syn: string[] = [];
+    const meaning_note = null;
+    const reading_note = null;
+    const meaning_mnemonic = formData["meaning_mnemonic"] as string;
+    const reading_mnemonic = formData["reading_mnemonic"] as string;
+    const emph = formData["emph"] as Emphasis;
+    const kun = formData["kun"] as string[];
+    const on = formData["on"] as string[];
+    const nanori = formData["nanori"] as string[];
+    const vocabulary = (formData["vocabulary"] as Record<string, string>[]).map(
+      (vocab) => {
+        return {
+          en: vocab["en"] as string,
+          ja: vocab["ja"] as string,
+          slug: vocab["slug"] as string,
+          voc: vocab["slug"] as string,
+          type: "Vocabulary",
+          characters: vocab["slug"] as string,
+        };
+      }
+    );
+    const meaning_hint = formData["meaning_hint"] as string;
+    const reading_hint = formData["reading_hint"] as string;
+    const related = (formData["related"] as Record<string, string>[]).map(
+      (radical) => {
+        return {
+          en: radical["en"] as string,
+          rad: radical["rad"] as string,
+          slug: (radical["en"] as string).toLowerCase().replaceAll(" ", "-"),
+          type: "Radical",
+          characters: radical["rad"] as string,
+          characters_image_url: null,
+        };
+      }
+    );
+    const relationships = { study_material: null };
+
     super(
       id,
       en,

@@ -1,9 +1,9 @@
 <label for="data-slug">Vocab:</label>
-<input type="text" name="slug" id="data-slug" />
+<input type="text" name="slug" id="data-slug" required />
 <label>Meaning:</label>
 <div class="item-list">
   <template class="item-template">
-    <input type="text" name="en" id="data-en" />
+    <input type="text" name="en" id="data-en" required />
   </template>
 </div>
 <label>Reading:</label>
@@ -12,10 +12,10 @@
     <input type="text" name="kana" id="data-kana" />
   </template>
 </div>
-<label for="data-meaning-explanation">Meaning mnemonic:</label>
-<textarea name="meaning_mnemonic" id="data-meaning-mnemoni"></textarea>
-<label for="data-reading-explanation">Reading mnemonic:</label>
-<textarea name="reading_mnemonic" id="data-reading-mnemoni"></textarea>
+<label for="data-meaning-mnemonic" required>Meaning mnemonic:</label>
+<textarea name="meaning_mnemonic" id="data-meaning-mnemonic"></textarea>
+<label for="data-reading-mnemonic" required>Reading mnemonic:</label>
+<textarea name="reading_mnemonic" id="data-reading-mnemonic"></textarea>
 <label>Parts of speech:</label>
 <div class="item-list" data-optional>
   <template class="item-template">
@@ -36,7 +36,10 @@
   <template class="item-template">
     <label for="data-related-kan">Kanji:</label>
     <input type="text" name="kan" id="data-sentences-kan" />
+    <label for="data-sentences-ja">Reading:</label>
+    <input type="text" name="ja" id="data-sentences-ja" />
     <label for="data-sentences-en">Meaning:</label>
     <input type="text" name="en" id="data-sentences-en" />
   </template>
 </div>
+<input type="submit" class="add-button" value="Add" />
