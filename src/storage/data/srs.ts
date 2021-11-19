@@ -20,7 +20,8 @@ export class SRSData {
   }
 
   public isLesson(): boolean {
-    return this.srs === SRSStages.Initiate;
+    return false;
+    // return this.srs === SRSStages.Initiate;
   }
 
   public isReview(): boolean {
@@ -41,5 +42,9 @@ export class SRSData {
         this.srs--;
       }
     }
+
+    this.recalculateDueDate();
   }
+
+  private recalculateDueDate(): void {}
 }

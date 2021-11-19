@@ -1,7 +1,7 @@
 .wics-addcustom-dialog {
   position: fixed;
-  width: 500px;
-  height: 500px;
+  width: min(50vw, 1000px);
+  height: 80vh;
   background-color: #fff;
   margin: auto;
   left: 50%;
@@ -140,4 +140,8 @@ textarea {
   width: 7em;
   height: 3em;
   font-size: 2em;
+}
+
+#data-related-kan {
+  width: 35px;
 }

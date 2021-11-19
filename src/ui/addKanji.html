@@ -1,5 +1,5 @@
 <label for="data-slug">Kanji:</label>
-<input type="text" name="slug" id="data-slug" />
+<input type="text" name="slug" id="data-slug" maxlength="1" />
 <label>Meaning:</label>
 <div class="item-list">
   <template class="item-template">
@@ -8,8 +8,8 @@
 </div>
 <label for="data-emphasis">Emphasis on:</label>
 <select name="emphasis" id="data-emphasis">
+  <option value="onyomi" selected>Onyomi</option>
   <option value="kunyomi">Kunyomi</option>
-  <option value="onyomi">Onyomi</option>
 </select>
 <label>Onyomi:</label>
 <div class="item-list" data-optional>
@@ -31,30 +31,30 @@
 </div>
 <label for="data-meaning-explanation">Meaning explanation:</label>
 <textarea name="meaning_mnemonic" id="data-meaning-explanation"></textarea>
-<label for="data-reading-explanation">Reading explanation:</label>
-<textarea name="reading_mnemonic" id="data-reading-explanation"></textarea>
 <label for="data-meaning-hint">Meaning hint:</label>
 <textarea name="meaning_hint" id="data-meaning-hint"></textarea>
+<label for="data-reading-explanation">Reading explanation:</label>
+<textarea name="reading_mnemonic" id="data-reading-explanation"></textarea>
 <label for="data-reading-hint">Reading hint:</label>
 <textarea name="reading_hint" id="data-reading-hint"></textarea>
 <label>Radical Composition:</label>
 <div class="item-list" data-optional data-groupname="related">
   <template class="item-template">
-    <label for="data-related-en">En:</label>
-    <input type="text" name="en" id="data-related-en" />
     <label for="data-related-rad">Radical:</label>
     <input type="text" name="rad" id="data-related-rad" />
+    <label for="data-related-en">En:</label>
+    <input type="text" name="en" id="data-related-en" />
   </template>
 </div>
 <label>Vocab Examples:</label>
 <div class="item-list" data-optional="" data-groupname="vocabulary">
   <template class="item-template">
-    <label for="data-vocab-en">En:</label>
-    <input type="text" name="en" id="data-vocab-en" />
     <label for="data-vocab-slug">Voc:</label>
     <input type="text" name="slug" id="data-vocab-slug" />
     <label for="data-vocab-ja">Re:</label>
     <input type="text" name="ja" id="data-vocab-ja" />
+    <label for="data-vocab-en">En:</label>
+    <input type="text" name="en" id="data-vocab-en" />
   </template>
 </div>
 <input type="submit" class="add-button" value="Add" />

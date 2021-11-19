@@ -1,4 +1,5 @@
 import { ItemData } from "../storage/data/common";
+import { Database } from "../storage/database";
 import { ItemList } from "./itemList";
 
 export type AddFormData = Record<
@@ -9,21 +10,51 @@ export type AddFormData = Record<
 export abstract class UIHandler {
   protected itemLists: ItemList[] = [];
   protected root: HTMLFormElement | undefined;
+  private abortController: AbortController | undefined;
 
   public hook(root: HTMLFormElement): void {
     this.root = root;
+
+    [...root.querySelectorAll("input")].forEach(
+      (elem) => ((elem as HTMLInputElement).required = true)
+    );
+    [...root.querySelectorAll("textarea")].forEach(
+      (elem) => ((elem as HTMLTextAreaElement).required = true)
+    );
 
     [...root.querySelectorAll(".item-list")].forEach((elem) =>
       this.itemLists.push(new ItemList(elem as HTMLElement))
     );
 
-    root.addEventListener("submit", (event) => {
-      event.preventDefault();
+    this.abortController = new AbortController();
 
-      const formData = this.getFormValues();
+    root.addEventListener(
+      "submit",
+      (event) => {
+        event.preventDefault();
 
-      console.log(this.createItem(formData));
-    });
+        const formData = this.getFormValues();
+        const result = this.createItem(formData);
+        this.submitItem(result);
+        this.clearForm();
+      },
+      { signal: this.abortController.signal }
+    );
+  }
+
+  private async submitItem(item: ItemData): Promise<void> {
+    let db = await Database.getInstance();
+    db.addCard(item);
+  }
+
+  private clearForm() {
+    this.root?.reset();
+
+    this.itemLists.forEach((list) => list.reset());
+  }
+
+  public unhook(): void {
+    this.abortController?.abort();
   }
 
   protected getFormValues(): AddFormData {

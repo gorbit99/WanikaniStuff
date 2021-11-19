@@ -59,6 +59,14 @@ export class ItemList {
     this.itemContainer.append(container);
   }
 
+  public dropElem(): void {
+    this.itemContainer.lastChild?.remove();
+  }
+
+  public clearElements(): void {
+    [...this.itemContainer.children].map((child) => child.remove());
+  }
+
   public getValues(): Record<string, string>[] {
     const values = this.valueNames.map((name) =>
       [...this.itemContainer.querySelectorAll(`[name=${name}]`)].map(
@@ -86,5 +94,13 @@ export class ItemList {
 
   public getGroupName(): string | null {
     return this.root.dataset["groupname"] ?? null;
+  }
+
+  public reset(): void {
+    this.clearElements();
+
+    if (!this.isOptional && !this.isReadonly) {
+      this.addElem({});
+    }
   }
 }
