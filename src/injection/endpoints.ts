@@ -50,28 +50,19 @@ export class Endpoints {
       }
 
       const data = a;
-
-      if (data.success === undefined) {
-        return originalAjax(data);
-      }
-
-      console.log(
-        data.type?.toLowerCase() === "put" &&
-          data.dataType === "json" &&
-          data.url?.startsWith("/json/progress")
-      );
-
-      const originalSuccess = data.success as (
-        _data: ReviewData[],
-        _status: string,
-        _jqXHR: JQuery.jqXHR
-      ) => void;
+      console.log(data);
 
       if (
         data.type?.toLowerCase() === "get" &&
         data.dataType === "json" &&
         data.url?.startsWith("/review/queue")
       ) {
+        const originalSuccess = data.success as (
+          _data: ReviewData[],
+          _status: string,
+          _jqXHR: JQuery.jqXHR
+        ) => void;
+
         data.success = (items: ReviewData[], status, jqXHR) => {
           Database.getInstance().then((db) => {
             db.getDueReviews().then((additionalItems) => {
@@ -85,7 +76,6 @@ export class Endpoints {
                   );
                 });
 
-              console.log(items);
               originalSuccess(items, status, jqXHR);
             });
           });
@@ -95,13 +85,29 @@ export class Endpoints {
         data.dataType === "json" &&
         data.url?.startsWith("/json/progress")
       ) {
-        console.log("Hello");
         if (data.data === undefined) {
           return originalAjax(data);
         }
-        let items = data.data as Record<number | string, [number, number]>;
-        console.log(Object.keys(items));
+        Database.getInstance().then((db) => {
+          let promise: Promise<void> | null = null;
+          let items = data.data as Record<number | string, number[]>;
+          Object.keys(items).forEach((id) => {
+            if (typeof id === "string" && id.startsWith("c")) {
+              let incorrectGuessArray = items[id] as number[];
+              let incorrectGuesses =
+                (incorrectGuessArray[0] ?? 0) + (incorrectGuessArray[1] ?? 0);
+              if (promise === null) {
+                promise = db.handleCompletion(id, incorrectGuesses);
+              } else {
+                promise.then(() => {
+                  db.handleCompletion(id, incorrectGuesses);
+                });
+              }
+            }
+          });
+        });
       }
+
       return originalAjax(data);
     }
 

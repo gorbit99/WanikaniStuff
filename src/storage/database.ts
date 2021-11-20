@@ -63,6 +63,7 @@ export class Database {
     incorrectGuesses: number
   ): Promise<void> {
     let item = await this.getById(id);
+    console.log(item);
     if (item === null) {
       return;
     }
